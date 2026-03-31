@@ -1,8 +1,5 @@
 USE esgbalance;
 
-# Implementazione vieste (Anouar)
-
-
 # Implementazione dei trigger
 DELIMITER |
 CREATE TRIGGER CambioStato
