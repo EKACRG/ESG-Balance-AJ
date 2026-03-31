@@ -9,8 +9,8 @@ BEGIN
 	UPDATE BILANCIO
     SET Stato = 'In revisione'
     WHERE (RagioneSociale = NEW.RagioneSociale) AND (DataCreazione = NEW.DataCreazione);
-END;
-| DELIMITER ;
+END |
+DELIMITER ;
 
 DELIMITER |
 CREATE TRIGGER ValutazioneFinale
@@ -26,5 +26,5 @@ BEGIN
     SET Stato = 'approvato'
     WHERE (RagioneSociale = NEW.RagioneSociale) AND (DataCreazione = NEW.DataCreazione) AND (Stato != 'respinto');
     END IF;
-END;
-| DELIMITER ;
+END |
+DELIMITER ;
