@@ -35,7 +35,7 @@ LIMIT 1;
 -- Classifica dei bilanci aziendali, ordinati in base al numero totale 
 -- di indicatori ESG connessi alle singole voci contabili
 CREATE OR REPLACE VIEW CLASSIFICA_BILANCI AS
-SELECT RagioneSociale, DataCreazione, COUNT(*) AS tot_indicatori
-FROM MEMORIZZA
-GROUP BY RagioneSociale, DataCreazione
+SELECT B.RagioneSociale, B.DataCreazione, COUNT(M.NomeIndicatore) AS tot_indicatori
+FROM BILANCIO AS B LEFT JOIN MEMORIZZA AS M ON (B.RagioneSociale = M.RagioneSociale) AND (B.DataCreazione = M.DataCreazione)  
+GROUP BY B.RagioneSociale, B.DataCreazione
 ORDER BY tot_indicatori DESC;
