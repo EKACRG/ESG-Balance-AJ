@@ -29,6 +29,26 @@
 
         echo "<h3>L'azienda più affidabile è: " . $azienda_top . " con un punteggio del " . $punteggio . "%</h3>";
 
+        // Estrazione dati O14: Classifica bilanci aziendali
+        
+        echo "<h2>Classifica dei Bilanci (Indicatori ESG)</h2>";
+
+        echo "<table border='1'><tr><th>Azienda</th><th>Data Bilancio</th><th>Totale Indicatori</th></tr>";
+
+        $queryO14 = "SELECT * FROM CLASSIFICA_BILANCI"; 
+        $risultatoO14 = $conn->query($queryO14);
+
+        while($rigaO14 = $risultatoO14->fetch_assoc()){
+            echo "<tr>";
+
+            echo "<td>" . $rigaO14['RagioneSociale'] . "</td>";
+            echo "<td>" . $rigaO14['DataCreazione'] . "</td>";
+            echo "<td>" . $rigaO14['tot_indicatori'] . "</td>";
+
+            echo "</tr>";           
+        }
+
+        echo "</table>";
 
     } catch (mysqli_sql_exception $e){
 
