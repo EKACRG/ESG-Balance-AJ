@@ -20,6 +20,15 @@
 
         echo "<h2>Il numero totale dei revisori esg è: " . $totale_revisori . "</h2>";
 
+        // Estrazione dati O13: Azienda con il valore di affidabilità più alto
+        $queryO13 = "SELECT * FROM AZIENDA_PIU_AFFIDABILE";
+        $risultatoO13 = $conn->query($queryO13);
+        $rigaO13 = $risultatoO13->fetch_assoc();
+        $azienda_top = $rigaO13['RagioneSociale'];
+        $punteggio = $rigaO13['affidabilita']; 
+
+        echo "<h3>L'azienda più affidabile è: " . $azienda_top . " con un punteggio del " . $punteggio . "%</h3>";
+
 
     } catch (mysqli_sql_exception $e){
 
