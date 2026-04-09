@@ -13,3 +13,11 @@ BEGIN
 		END IF;
 END |
 DELIMITER ;
+
+DELIMITER |
+CREATE PROCEDURE InserimentoAnnotazione (IN  p_Username_Revisore VARCHAR(30), IN P_NomeVoceBilancio VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN DataCreazione DATE, IN Data DATE, IN Testo TEXT)
+BEGIN
+        INSERT INTO POSSIEDE (Username_Revisore, NomeVoceBilancio, RagioneSociale, DataCreazione, Data, Testo)
+        VALUES (p_Username_Revisore,P_NomeVoceBilancio,P_RagioneSociale, DataCreazione, Data,Testo);
+END |
+DELIMITER ;
