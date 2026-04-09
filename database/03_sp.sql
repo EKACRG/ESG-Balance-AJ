@@ -15,9 +15,23 @@ END |
 DELIMITER ;
 
 DELIMITER |
-CREATE PROCEDURE InserimentoAnnotazione (IN  p_Username_Revisore VARCHAR(30), IN P_NomeVoceBilancio VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN DataCreazione DATE, IN Data DATE, IN Testo TEXT)
+CREATE PROCEDURE InserimentoAnnotazione (IN  P_Username_Revisore VARCHAR(30), IN P_NomeVoceBilancio VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE, IN P_Data DATE, IN P_Testo TEXT)
 BEGIN
         INSERT INTO POSSIEDE (Username_Revisore, NomeVoceBilancio, RagioneSociale, DataCreazione, Data, Testo)
-        VALUES (p_Username_Revisore,P_NomeVoceBilancio,P_RagioneSociale, DataCreazione, Data,Testo);
+        VALUES (P_Username_Revisore,P_NomeVoceBilancio,P_RagioneSociale, P_DataCreazione, P_Data,P_Testo);
+END |
+DELIMITER ;
+
+DELIMITER |
+CREATE PROCEDURE InserimentoGiudizio (IN  P_Username_Revisore VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE, IN P_Esito VARCHAR(30), IN P_CampoRilievi TEXT, IN P_Data DATE)
+BEGIN
+		IF P_Esito IN ('approvazione', 'approvazione con rilievi', 'respingimento') THEN
+			INSERT INTO VALUTA_GIUDIZIO (Username_Revisore, RagioneSociale, DataCreazione, Esito, CampoRilievi, Data)
+			VALUES (P_Username_Revisore,P_RagioneSociale, P_DataCreazione, P_Esito,P_CampoRilievi,P_Data);
+		ELSE
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Errore: Esito non valido. Deve essere: approvazione, approvazione con rilievi, o respingimento';
+    END IF;
+
 END |
 DELIMITER ;
