@@ -1,3 +1,4 @@
+USE esgbalance;
 -- Parte anouar
 
 -- Inserimento da parte dei revisori le proprie competenze
@@ -49,3 +50,20 @@ BEGIN
     END IF;
 END |
 DELIMITER ;
+
+-- Creazione e popolamento di un nuovo bilancio di esercizio
+DELIMITER |
+CREATE PROCEDURE CreaBilancio( IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE)
+BEGIN
+	INSERT INTO BILANCIO (RagioneSociale, DataCreazione, Stato)
+    VALUES (P_RagioneSociale, P_Datacreazione, 'bozza');
+END |
+DELIMITER ;
+
+DELIMITER |
+CREATE PROCEDURE PopolaVoceBilancio( IN P_NomeVoce VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE,IN P_ValoreNumerico DECIMAL(12,2))
+BEGIN
+	INSERT IGNORE INTO VOCE_BILANCIO (NomeVoceBilancio, RagioneSociale, DataCreazione, ValoreNumerico) 
+    VALUES ( P_NomeVoce, P_RagioneSociale ,  P_DataCreazione , P_ValoreNumerico);
+END |
+DELIMITER ; 
