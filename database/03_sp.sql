@@ -1,5 +1,15 @@
 USE esgbalance;
--- Parte anouar
+
+-- Login utente sulla piattaforma
+DROP PROCEDURE IF EXISTS LoginUtente;
+DELIMITER |
+CREATE PROCEDURE LoginUtente(IN p_username VARCHAR(30), IN p_password VARCHAR(30))
+BEGIN
+	SELECT CF
+    FROM UTENTI
+    WHERE UTENTI.Username = p_username AND UTENTI.Password = p_password;
+END |
+DELIMITER ; 
 
 -- Inserimento da parte dei revisori le proprie competenze
 DROP PROCEDURE IF EXISTS InserimentoCompetenze;
