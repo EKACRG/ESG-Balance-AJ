@@ -15,18 +15,24 @@ CREATE TABLE IF NOT EXISTS COMPETENZA (
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS  VOCE_CONTABILE (
- NomeVoceContabile VARCHAR(30) PRIMARY KEY,
- Descrizione TEXT NOT NULL
+ NomeVoceContabile VARCHAR(30),
+ Username_Amministratore VARCHAR(30),
+ Descrizione TEXT NOT NULL,
+ PRIMARY KEY (NomeVoceContabile, Username_Amministratore),
+ FOREIGN KEY (Username_Amministratore) REFERENCES UTENTI(Username) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS INDICATORE_ESG (
 	NomeIndicatore VARCHAR(100) PRIMARY KEY,
+    Username_Amministratore VARCHAR(30),
     Immagine VARCHAR(255) NOT NULL,
     Rilevanza INT NOT NULL CHECK (Rilevanza >= 0 AND Rilevanza <= 10),
     TipoIndicatore VARCHAR(50) NOT NULL,
     CodiceNormativa VARCHAR(100),
     AmbitoSociale VARCHAR(100),
-    FrequenzaRilevazione VARCHAR(50)
+    FrequenzaRilevazione VARCHAR(50),
+    PRIMARY KEY (NomeIndicatore, Username_Amministratore),
+	FOREIGN KEY (Username_Amministratore) REFERENCES UTENTI(Username) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS EMAIL (
@@ -61,22 +67,6 @@ CREATE TABLE IF NOT EXISTS POSSIEDE (
     PRIMARY KEY (Username_Revisore, NomeCompetenza),
     FOREIGN KEY (Username_Revisore) REFERENCES REVISORE_ESG(Username) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (NomeCompetenza) REFERENCES COMPETENZA(NomeCompetenza) ON UPDATE CASCADE ON DELETE CASCADE
-)ENGINE=InnoDB;
-
-CREATE TABLE IF NOT EXISTS TEMPLATE (
-    Username_Amministratore VARCHAR(30),
-    NomeVoceContabile VARCHAR(30),
-    PRIMARY KEY (Username_Amministratore, NomeVoceContabile),
-    FOREIGN KEY (Username_Amministratore) REFERENCES AMMINISTRATORE(Username) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (NomeVoceContabile) REFERENCES VOCE_CONTABILE(NomeVoceContabile) ON UPDATE CASCADE ON DELETE CASCADE
-)ENGINE=InnoDB;
-
-CREATE TABLE IF NOT EXISTS POPOLA (
-    Username_Amministratore VARCHAR(30),
-    NomeIndicatore VARCHAR(100),
-    PRIMARY KEY (Username_Amministratore, NomeIndicatore),
-    FOREIGN KEY (Username_Amministratore) REFERENCES AMMINISTRATORE(Username) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (NomeIndicatore) REFERENCES INDICATORE_ESG(NomeIndicatore) ON UPDATE CASCADE ON DELETE CASCADE
 )ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS AZIENDA (
@@ -168,14 +158,14 @@ INSERT IGNORE INTO EMAIL (Username, IndirizzoEmail) VALUES
 ('revisore2', 'revisore2@example.com'),
 ('responsabile1', 'resp1@example.com');
 
-INSERT IGNORE INTO VOCE_CONTABILE (NomeVoceContabile, Descrizione) VALUES
-('Ricavi Vendite', 'Totale dei ricavi derivanti dalla vendita di prodotti e servizi'),
-('Costo del Personale', 'Costi sostenuti per stipendi e contributi dei dipendenti'),
-('Consumi Energetici', 'Costi sostenuti per l energia elettrica');
+INSERT IGNORE INTO VOCE_CONTABILE (NomeVoceContabile, Username_Amministratore , Descrizione) VALUES
+('Ricavi Vendite', 'amministratore' ,'Totale dei ricavi derivanti dalla vendita di prodotti e servizi'),
+('Costo del Personale', 'amministratore' , 'Costi sostenuti per stipendi e contributi dei dipendenti'),
+('Consumi Energetici', 'amministratore' ,'Costi sostenuti per l energia elettrica');
 
-INSERT IGNORE INTO INDICATORE_ESG (NomeIndicatore, Immagine, Rilevanza, TipoIndicatore ,CodiceNormativa, AmbitoSociale, FrequenzaRilevazione) VALUES
-('Energia Rinnovabile', 'energia.png', 9, 'A', 'ISO50001', NULL, NULL),
-('Ore Formazione', 'formazione.png',7, 'B', NULL, 'Dipendenti', 'Annuale');
+INSERT IGNORE INTO INDICATORE_ESG (NomeIndicatore, Username_Amministratore, Immagine, Rilevanza, TipoIndicatore ,CodiceNormativa, AmbitoSociale, FrequenzaRilevazione) VALUES
+('Energia Rinnovabile', 'amministratore' , 'energia.png', 9, 'A', 'ISO50001', NULL, NULL),
+('Ore Formazione', 'amministratore' , 'formazione.png',7, 'B', NULL, 'Dipendenti', 'Annuale');
 
 INSERT IGNORE  INTO AZIENDA (RagioneSociale, Nome, PartitaIVA, Settore, NumDipendenti, Logo, NumBilanci, Username_Responsabile) VALUES
 ('Apple Italia SRL', 'Apple', '12345678901', 'Tecnologia', 500, 'apple_logo.png', 0, 'responsabile1'),
@@ -185,10 +175,6 @@ INSERT IGNORE INTO BILANCIO (RagioneSociale, DataCreazione, Stato) VALUES
 ('Apple Italia SRL', '2025-12-31', 'approvato'),
 ('Apple Italia SRL', '2024-12-31', 'approvato'),
 ('Barilla SPA', '2025-12-31', 'bozza');
-
-INSERT IGNORE INTO POPOLA (Username_Amministratore, NomeIndicatore) VALUES
-('amministratore', 'Energia Rinnovabile'),
-('amministratore', 'Ore Formazione');
 
 INSERT IGNORE INTO COMPETENZA (NomeCompetenza) VALUES
 ('Revisione Contabile'),
