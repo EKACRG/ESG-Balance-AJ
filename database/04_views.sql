@@ -1,0 +1,43 @@
+USE esgbalance;
+
+-- Mostrare il Numero di aziende registrate in piattaforma
+CREATE OR REPLACE VIEW NUM_AZIENDE AS
+SELECT COUNT(*) AS num_aziende
+FROM AZIENDA;
+
+-- Mostrare il Numero di revisori ESG registrati in piattaforma
+CREATE OR REPLACE VIEW NUM_REVISORI_ESG AS
+SELECT COUNT(*) AS num_revisori_esg
+FROM REVISORE_ESG;
+
+-- Mostrare l'azienda con il valore più alto di affidabilità. Quest'ultima è definita come la
+-- percentuale di bilanci approvati dai revisori senza rilievi (esito: "approvazione")
+CREATE OR REPLACE VIEW AZIENDA_PIU_AFFIDABILE AS
+WITH TOTALI AS (
+    SELECT RagioneSociale, COUNT(*) AS totale
+    FROM VALUTA_GIUDIZIO
+    GROUP BY RagioneSociale
+),
+APPROVATI AS (
+    SELECT RagioneSociale, COUNT(*) AS approvati
+    FROM VALUTA_GIUDIZIO
+    WHERE Esito = 'approvazione'
+    GROUP BY RagioneSociale
+),
+AFFIDABILITA AS (
+    SELECT 
+        TOTALI.RagioneSociale, 
+        ROUND((COALESCE(APPROVATI.approvati, 0) / TOTALI.totale) * 100, 2) AS affidabilita
+    FROM TOTALI LEFT JOIN APPROVATI ON TOTALI.RagioneSociale = APPROVATI.RagioneSociale
+)
+SELECT RagioneSociale, affidabilita
+FROM AFFIDABILITA
+WHERE affidabilita = (SELECT MAX(affidabilita) FROM AFFIDABILITA);
+
+-- Classifica dei bilanci aziendali, ordinati in base al numero totale 
+-- di indicatori ESG connessi alle singole voci contabili
+CREATE OR REPLACE VIEW CLASSIFICA_BILANCI AS
+SELECT B.RagioneSociale, B.DataCreazione, COUNT(M.NomeIndicatore) AS tot_indicatori
+FROM BILANCIO AS B LEFT JOIN MEMORIZZA AS M ON (B.RagioneSociale = M.RagioneSociale) AND (B.DataCreazione = M.DataCreazione)  
+GROUP BY B.RagioneSociale, B.DataCreazione
+ORDER BY tot_indicatori DESC;
