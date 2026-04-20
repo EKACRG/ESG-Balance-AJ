@@ -78,6 +78,54 @@ BEGIN
 END |
 DELIMITER ;
 
+-- Popolamento della lista degli indicatori ESG
+DROP PROCEDURE IF EXISTS InserisciIndicatoreESG;
+DELIMITER |
+CREATE PROCEDURE InserisciIndicatoreESG(
+    IN Indicatore VARCHAR(100),
+    IN UsernameAmministratore VARCHAR(30),
+    IN Immagine VARCHAR(255),
+    IN Rilevanza INT,
+    IN TipoIndicatore VARCHAR(50),
+    IN CodiceNormativa VARCHAR(100),
+    IN AmbitoSociale VARCHAR(100),
+    IN FrequenzaRilevazione VARCHAR(50)
+)
+BEGIN
+    -- Controllo nome indicatore già in uso
+    IF EXISTS (SELECT 1 FROM INDICATORE_ESG WHERE Indicatore = INDICATORE_ESG.NomeIndicatore) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Errore: esiste già un indicatore ESG con questo nome';
+    END IF;
+
+    -- Controllo coerenza campi per tipo Ambiente
+    IF TipoIndicatore = 'Ambientale' AND CodiceNormativa IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Errore: CodiceNormativa è obbligatorio per indicatori ambientali';
+    END IF;
+
+    -- Controllo coerenza campi per tipo Sociale
+    IF TipoIndicatore = 'Sociale' AND (AmbitoSociale IS NULL OR FrequenzaRilevazione IS NULL) IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Errore: AmbitoSociale e FrequenzaRilevazione è obbligatorio per indicatori ambientali';
+    END IF;
+
+    INSERT INTO INDICATORE_ESG (NomeIndicatore, Username_Amministratore, Immagine, Rilevanza, TipoIndicatore, CodiceNormativa, AmbitoSociale, FrequenzaRilevazione) VALUES (Indicatore, UsernameAmministratore, Immagine, Rilevanza, TipoIndicatore, CodiceNormativa, AmbitoSociale, FrequenzaRilevazione);END |
+DELIMITER ;
+
+-- Creazione del “template” di bilancio di esercizio
+DROP PROCEDURE IF EXISTS InserisciVoceContabile;
+DELIMITER |
+CREATE PROCEDURE InserisciVoceContabile(IN VoceContabile VARCHAR(30), IN UsernameAmministratore VARCHAR(30), IN Descrizione TEXT)
+BEGIN
+    -- Controllo nome voce contabile già in uso
+    IF EXISTS (SELECT 1 FROM VOCE_CONTABILE WHERE VoceContabile = VOCE_CONTABILE.NomeVoceContabile) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Errore: Nome voce contabile già in uso'; 
+    END IF;
+END |
+DELIMITER ;
+
 -- Inserimento da parte dei revisori le proprie competenze
 DROP PROCEDURE IF EXISTS InserimentoCompetenze;
 DELIMITER |
