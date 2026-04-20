@@ -3,13 +3,80 @@ USE esgbalance;
 -- Login utente sulla piattaforma
 DROP PROCEDURE IF EXISTS LoginUtente;
 DELIMITER |
-CREATE PROCEDURE LoginUtente(IN p_username VARCHAR(30), IN p_password VARCHAR(30))
+CREATE PROCEDURE LoginUtente(IN UsernameUtente VARCHAR(30), IN PasswordUtente VARCHAR(30))
 BEGIN
-	SELECT CF
+	SELECT Username
     FROM UTENTI
-    WHERE UTENTI.Username = p_username AND UTENTI.Password = p_password;
+    WHERE UsernameUtente = UTENTI.Username AND PasswordUtente = UTENTI.Password;
 END |
 DELIMITER ; 
+
+-- Registrazione Utente (campi comuni a tutti i tipi di utenti)
+DROP PROCEDURE IF EXISTS RegistraUtente;
+DELIMITER |
+CREATE PROCEDURE RegistraUtente(
+    IN UsernameUtente VARCHAR(30),
+    IN Password VARCHAR(30),
+    IN CodiceFiscale CHAR(16),
+    IN DataNascita DATE,
+    IN LuogoNascita VARCHAR(30),
+    IN IndirizzoEmail VARCHAR(30)
+)
+BEGIN
+    -- Controllo username già in uso
+    IF EXISTS (SELECT 1 FROM UTENTI WHERE UsernameUtente = UTENTI.Username) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Errore: Username già in uso';
+    END IF;
+
+    -- Controllo CF esattametne 16 caratteri
+    IF CHAR_LENGTH(CodiceFiscale) != 16 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Errore: Codice Fiscale deve essere esattamente di 16 caratteri';
+    END IF;
+
+    -- Controllo CF già in uso
+    IF EXISTS (SELECT 1 FROM UTENTI WHERE CodiceFiscale = UTENTI.CF) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Errore: Codice Fiscale già in uso';
+    END IF;
+
+    INSERT INTO UTENTI (Username, Password, CF, DataNascita, LuogoNascita) VALUES (UsernameUtente, Password, CodiceFiscale, DataNascita, LuogoNascita);
+    INSERT INTO EMAIL (Username, IndirizzoEmail) VALUES (UsernameUtente, IndirizzoEmail);
+END |
+DELIMITER ;
+
+-- Registrazione Amministratore
+DROP PROCEDURE IF EXISTS RegistraAmministratore;
+DELIMITER |
+CREATE PROCEDURE RegistraAmministratore(IN UsernameUtente VARCHAR(30))
+BEGIN
+    INSERT INTO AMMINISTRATORE (Username) VALUES (UsernameUtente);
+END |
+DELIMITER ;
+
+-- Registrazione Revisore
+DROP PROCEDURE IF EXISTS RegistraRevisore;
+DELIMITER |
+CREATE PROCEDURE RegistraRevisore(IN UsernameUtente VARCHAR(30))
+BEGIN
+    INSERT INTO REVISORE_ESG (Username, NumeroRevisioni, IndiceAffidabilita) VALUES (UsernameUtente, 0, 0.00);
+END |
+DELIMITER ;
+
+-- Registra Responsabile
+DROP PROCEDURE IF EXISTS RegistraResponsabile;
+DELIMITER |
+CREATE PROCEDURE RegistraResponsabile(IN UsernameUtente VARCHAR(30), IN CurriculumVitae VARCHAR(255))
+BEGIN
+    IF CurriculumVitae NOT LIKE '%.pdf' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Errore: CurriculumVitae deve essere in formato PDF (.pdf)';
+    END IF;
+
+    INSERT INTO RESPONSABILE_AZIENDALE (Username, CurriculumVitae) VALUES (UsernameUtente, CurriculumVitae);
+END |
+DELIMITER ;
 
 -- Inserimento da parte dei revisori le proprie competenze
 DROP PROCEDURE IF EXISTS InserimentoCompetenze;
@@ -21,7 +88,7 @@ BEGIN
         VALUES (P_Username_Revisore,P_NomeCompetenza,P_Livello);
         ELSE
 			SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Errore: l livello di competenza deve essere compreso tra 0 e 5';
+            SET MESSAGE_TEXT = 'Errore: il livello di competenza deve essere compreso tra 0 e 5';
 		END IF;
 END |
 DELIMITER ;
