@@ -91,9 +91,9 @@ CREATE TABLE IF NOT EXISTS VALUTA_GIUDIZIO (
     Username_Revisore VARCHAR(30),
     RagioneSociale VARCHAR(100),
     DataCreazione DATE,
-    Esito VARCHAR(30) NOT NULL, 
-    CampoRilievi TEXT,
-    Data DATE NOT NULL,
+    Esito VARCHAR(30) NULL, 
+    CampoRilievi TEXT NULL,
+    Data DATE NULL,
     PRIMARY KEY (Username_Revisore, RagioneSociale, DataCreazione),
     FOREIGN KEY (Username_Revisore) REFERENCES REVISORE_ESG(Username) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (RagioneSociale, DataCreazione) REFERENCES BILANCIO(RagioneSociale, DataCreazione) ON UPDATE CASCADE ON DELETE CASCADE
