@@ -126,6 +126,17 @@ BEGIN
 END |
 DELIMITER ;
 
+-- Associazione di revisore ESG ad un bilancio aziendale
+DROP PROCEDURE IF EXISTS AssociaRevisore;
+DELIMITER |
+CREATE PROCEDURE AssociaRevisore( IN P_Username_Revisore VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE)
+BEGIN
+    INSERT INTO VALUTA (Username, RagioneSociale, DataCreazione)
+    VALUES (P_Username_Revisore, P_RagioneSociale, P_DataCreazione);
+END |
+DELIMITER ;
+
+
 -- Inserimento da parte dei revisori le proprie competenze
 DROP PROCEDURE IF EXISTS InserimentoCompetenze;
 DELIMITER |
@@ -156,8 +167,13 @@ DELIMITER |
 CREATE PROCEDURE InserimentoGiudizio (IN  P_Username_Revisore VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE, IN P_Esito VARCHAR(30), IN P_CampoRilievi TEXT, IN P_Data DATE)
 BEGIN
 		IF P_Esito IN ('approvazione', 'approvazione con rilievi', 'respingimento') THEN
-			INSERT INTO VALUTA_GIUDIZIO (Username_Revisore, RagioneSociale, DataCreazione, Esito, CampoRilievi, Data)
-			VALUES (P_Username_Revisore,P_RagioneSociale, P_DataCreazione, P_Esito,P_CampoRilievi,P_Data);
+			UPDATE VALUTA_GIUDIZIO 
+            SET Esito = P_Esito,
+				CampoRilievi = P_CampoRilievi,
+                Data = P_Data
+			WHERE Username_Revisore = P_Username_Revisore AND
+				  RagioneSociale = P_RagioneSociale AND
+                  DataCreazione = P_DataCreazione;
 		ELSE
         SIGNAL SQLSTATE '45000' 
         SET MESSAGE_TEXT = 'Errore: Esito non valido. Deve essere: approvazione, approvazione con rilievi, o respingimento';
