@@ -14,7 +14,7 @@ DELIMITER ;
 
 DELIMITER |
 CREATE TRIGGER ValutazioneFinale
-AFTER INSERT ON VALUTA_GIUDIZIO
+AFTER UPDATE ON VALUTA_GIUDIZIO
 FOR EACH ROW
 BEGIN
 	IF NEW.Esito = 'respingimento' THEN
@@ -26,5 +26,17 @@ BEGIN
     SET Stato = 'approvato'
     WHERE (RagioneSociale = NEW.RagioneSociale) AND (DataCreazione = NEW.DataCreazione) AND (Stato != 'respinto');
     END IF;
+END |
+DELIMITER ;
+
+# Implementazione calcolo dei bilanci
+DELIMITER |
+CREATE TRIGGER CalcoloBilancio
+AFTER INSERT ON BILANCIO
+FOR EACH ROW
+BEGIN
+	UPDATE AZIENDA
+    SET NumBilanci = NumBilanci + 1
+    WHERE (RagioneSociale = NEW.RagioneSociale);
 END |
 DELIMITER ;
