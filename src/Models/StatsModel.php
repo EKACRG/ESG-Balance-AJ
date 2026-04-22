@@ -26,7 +26,7 @@ class StatsModel {
 
     public function getClassificaBilanci() {
         $stmt = $this->pdo->query("SELECT * FROM CLASSIFICA_BILANCI");
-        return $stmt->fetch();
+        return $stmt->fetchAll();
     }
 }
 ?>
