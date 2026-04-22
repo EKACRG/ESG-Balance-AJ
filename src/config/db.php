@@ -17,3 +17,4 @@ try {
     include __DIR__ . "/../Views/error.php";
     exit;
 }
+?>
