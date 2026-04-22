@@ -3,6 +3,8 @@ services:
     build: .
     ports:
       - "80:80"
+    env_file:
+      - .env
     volumes:
       - ./src:/var/www/html
       - ./vhost.conf:/etc/apache2/sites-enabled/000-default.conf
@@ -11,11 +13,8 @@ services:
 
   mysql:
     image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    env_file:
+      - .env
     volumes:
       - mysqldata:/var/lib/mysql
       - ./database:/docker-entrypoint-initdb.d:ro
