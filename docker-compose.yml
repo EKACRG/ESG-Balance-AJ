@@ -4,7 +4,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./public:/var/www/html
+      - ./src:/var/www/html
       - ./vhost.conf:/etc/apache2/sites-enabled/000-default.conf
     depends_on:
       - mysql
