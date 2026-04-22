@@ -44,8 +44,13 @@ if(isset($_POST['salva_competenza'])){
     $query05 = $conn->prepare("CALL InserimentoCompetenze(?,?,?)");
     $query05->bind_param("ssi", $username, $competenza, $livello);
 
-    // TEST: Stampiamo i dati a schermo per essere sicuri che arrivino
-    echo "<h3 style='color: blue;'>Test ricezione dati: L'utente $username vuole inserire $competenza a livello $livello.</h3>";
+    // TEST: Stampiamo a schermo se l'operazione è andata a buon fine o meno
+    try{
+        $query05->execute();
+        echo "<h3 style='color:green;'>Operazione completata: Competenza salvata con successo!</h3>";
+    } catch(mysqli_sql_exception $e){
+        echo "<h3 style='color:red;'>Errore dal Database: " . $e->getMessage() . "</h3>";
+    }
     
 
 }
