@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
@@ -24,3 +24,28 @@
     </form> 
 </body>
 </html>    
+
+<?php
+// Controlla se il form è stato inviato
+if(isset($_POST['salva_competenza'])){
+
+    // Connessione al database 
+    $conn = new mysqli("mysql", "aj", "esamebasi_aj_01", "esgbalance");
+
+    if ($conn->connect_error) {
+        die("Errore di connessione: " . $conn->connect_error);
+    }
+
+    // Recupero dei dati digitati nel form
+    $username = $_POST['username_revisore'];
+    $competenza = $_POST['nome_competenza'];
+    $livello = $_POST['livello'];
+
+    $query05 = $conn->prepare("CALL InserimentoCompetenze(?,?,?)");
+    $query05->bind_param("ssi", $username, $competenza, $livello);
+
+    // TEST: Stampiamo i dati a schermo per essere sicuri che arrivino
+    echo "<h3 style='color: blue;'>Test ricezione dati: L'utente $username vuole inserire $competenza a livello $livello.</h3>";
+    
+
+}
