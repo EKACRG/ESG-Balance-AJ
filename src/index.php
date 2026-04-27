@@ -9,16 +9,24 @@ spl_autoload_register(function ($class) {
 });
 
 $uri = trim($_SERVER['REQUEST_URI'], '/');
+$parts = explode('/', $uri);
 
-switch ($uri) {
-    case '': 
+$controllerName = isset($parts[0]) && $parts[0] !== '' ? ucfirst($parts[0]) . 'Controller' : null;
+$methodName = isset($parts[1]) && $parts[1] !== '' ? $parts[1] : 'index';
+
+$controllerClass = 'Controllers\\' . $controllerName;
+
+if ($controllerName && class_exists($controllerClass)) {
+    $controller = new $controllerClass();
+    if (method_exists($controller, $methodName)) {
+        $controller->$methodName();
+    }
+    else {
         http_response_code(404);
-        break;
-    case 'stats':
-        $controller = new Controllers\StatsController();
-        $controller->index();
-        break;
-    default:
-        http_response_code(404);
-        break;
+        echo '404 - Metodo non trovato';
+    }
+}
+else {
+    http_response_code(404);
+    echo '404 - Pagina non trovata';
 }
