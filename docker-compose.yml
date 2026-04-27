@@ -7,7 +7,6 @@ services:
       - .env
     volumes:
       - ./src:/var/www/html
-      - ./vhost.conf:/etc/apache2/sites-enabled/000-default.conf
     depends_on:
       - mysql
 

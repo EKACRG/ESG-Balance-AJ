@@ -10,5 +10,7 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
 
 RUN a2enmod rewrite headers
 
+COPY vhost.conf /etc/apache2/sites-available/000-default.conf
+
 WORKDIR /var/www/html
 EXPOSE 80
