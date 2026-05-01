@@ -74,7 +74,7 @@ class DatabaseModel {
     }
 
     // Registrazione
-    public function register(
+    public function signup(
         string $username,
         string $password,
         string $cf,
