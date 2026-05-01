@@ -8,16 +8,18 @@ spl_autoload_register(function ($class) {
     }
 });
 
+$dbModel = new Models\DatabaseModel();
+session_start();
+
 $uri = trim($_SERVER['REQUEST_URI'], '/');
 $parts = explode('/', $uri);
 
 $controllerName = isset($parts[0]) && $parts[0] !== '' ? ucfirst($parts[0]) . 'Controller' : null;
 $methodName = isset($parts[1]) && $parts[1] !== '' ? $parts[1] : 'index';
-
 $controllerClass = 'Controllers\\' . $controllerName;
 
 if ($controllerName && class_exists($controllerClass)) {
-    $controller = new $controllerClass();
+    $controller = new $controllerClass($dbModel);
     if (method_exists($controller, $methodName)) {
         $controller->$methodName();
     }

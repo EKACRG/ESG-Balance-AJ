@@ -7,7 +7,7 @@ $user = $_ENV['MYSQL_ROOT_USER'];
 $password = $_ENV['MYSQL_PASSWORD'];
 
 try {
-    $pdo = new PDO(
+    $pdo = new \PDO(
         "mysql:host=$host;dbname=$database;charset=utf8mb4",
         $user,
         $password
