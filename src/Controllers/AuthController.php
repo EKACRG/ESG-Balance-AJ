@@ -9,6 +9,8 @@ class AuthController {
     }
 
     public function login() {
+        $errore = null;
+
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $username = $_POST["username"] ?? "";
             $password = $_POST["password"] ?? "";
@@ -26,6 +28,8 @@ class AuthController {
     }
 
     public function signup() {
+        $errore = null;
+
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $username = $_POST["username"] ?? "";
             $password = $_POST["password"] ?? "";
@@ -45,8 +49,7 @@ class AuthController {
             }
         }
 
-        include __DIR__ . "/../Views/SignUpView.php";
+        include __DIR__ . "/../Views/SignupView.php";
     }
 }
-
 ?>
