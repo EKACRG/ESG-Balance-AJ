@@ -51,5 +51,11 @@ class AuthController {
 
         include __DIR__ . "/../Views/SignupView.php";
     }
+
+    public function logout() {
+        $this->dbModel->logout();
+        header("Location: /auth/login");
+        exit;
+    }
 }
 ?>
