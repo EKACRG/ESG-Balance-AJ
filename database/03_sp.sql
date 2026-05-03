@@ -16,7 +16,7 @@ DROP PROCEDURE IF EXISTS RegistraUtente;
 DELIMITER |
 CREATE PROCEDURE RegistraUtente(
     IN UsernameUtente VARCHAR(30),
-    IN Password VARCHAR(30),
+    IN Password VARCHAR(255),
     IN CodiceFiscale CHAR(16),
     IN DataNascita DATE,
     IN LuogoNascita VARCHAR(30),
