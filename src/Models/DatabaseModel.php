@@ -37,7 +37,7 @@ class DatabaseModel {
         $stmt->execute([":username" => $username]);
         $user = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        if (!empty($user) && $password === $user["Password"]) {
+        if (!empty($user) && password_verify($password, $user["Password"])) {
             session_regenerate_id();
             $_SESSION["username"] = $username;
             $_SESSION["password"] = $user["Password"];
@@ -59,7 +59,7 @@ class DatabaseModel {
         $stmt = $this->pdo->prepare("SELECT * FROM UTENTI WHERE Username = :username");
         $stmt->execute([":username" => $_SESSION["username"]]);
         $user = $stmt->fetch(\PDO::FETCH_ASSOC);
-        if (!empty($user) && $_SESSION["password"] === $user["Password"]) {
+        if (!empty($user) && password_verify($_SESSION["password"], $user["Password"])) {
             return true;
         }
 
@@ -84,10 +84,13 @@ class DatabaseModel {
         string $tipoUtente,
         ?string $curriculumVitae = null
     ): bool {
+        // Per non salvare la password in chiaro
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+
         $stmt = $this->pdo->prepare("CALL RegistraUtente(:username, :password, :cf, :dataNascita, :luogoNascita, :email)");
         $stmt->execute([
             ":username" => $username,
-            ":password" => $password,
+            ":password" => $passwordHash,
             ":cf" => $cf,
             ":dataNascita" => $dataNascita,
             ":luogoNascita" => $luogoNascita,
