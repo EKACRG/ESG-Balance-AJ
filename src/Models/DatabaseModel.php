@@ -133,5 +133,11 @@ class DatabaseModel {
 
         return "responsabile";
     }
+
+    // Inserisce una nuova competenza per un revisore ESG 
+    public function inserisciCompetenza(string $username, string $competenza, int $livello): void {
+    $stmt = $this->pdo->prepare("CALL InserimentoCompetenze(?,?,?)");
+    $stmt->execute([$username, $competenza, $livello]);
+    }
 }
 ?>
