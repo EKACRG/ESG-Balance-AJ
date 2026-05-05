@@ -16,7 +16,7 @@ DROP PROCEDURE IF EXISTS RegistraUtente;
 DELIMITER |
 CREATE PROCEDURE RegistraUtente(
     IN UsernameUtente VARCHAR(30),
-    IN Password VARCHAR(30),
+    IN Password VARCHAR(255),
     IN CodiceFiscale CHAR(16),
     IN DataNascita DATE,
     IN LuogoNascita VARCHAR(30),
@@ -105,12 +105,13 @@ BEGIN
     END IF;
 
     -- Controllo coerenza campi per tipo Sociale
-    IF TipoIndicatore = 'Sociale' AND (AmbitoSociale IS NULL OR FrequenzaRilevazione IS NULL) IS NULL THEN
+    IF TipoIndicatore = 'Sociale' AND (AmbitoSociale IS NULL OR FrequenzaRilevazione IS NULL) THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Errore: AmbitoSociale e FrequenzaRilevazione è obbligatorio per indicatori ambientali';
+        SET MESSAGE_TEXT = 'Errore: AmbitoSociale e FrequenzaRilevazione sono obbligatori per indicatori sociali';
     END IF;
 
-    INSERT INTO INDICATORE_ESG (NomeIndicatore, Username_Amministratore, Immagine, Rilevanza, TipoIndicatore, CodiceNormativa, AmbitoSociale, FrequenzaRilevazione) VALUES (Indicatore, UsernameAmministratore, Immagine, Rilevanza, TipoIndicatore, CodiceNormativa, AmbitoSociale, FrequenzaRilevazione);END |
+    INSERT INTO INDICATORE_ESG (NomeIndicatore, Username_Amministratore, Immagine, Rilevanza, TipoIndicatore, CodiceNormativa, AmbitoSociale, FrequenzaRilevazione) VALUES (Indicatore, UsernameAmministratore, Immagine, Rilevanza, TipoIndicatore, CodiceNormativa, AmbitoSociale, FrequenzaRilevazione);
+END |
 DELIMITER ;
 
 -- Creazione del “template” di bilancio di esercizio
@@ -123,6 +124,8 @@ BEGIN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Errore: Nome voce contabile già in uso'; 
     END IF;
+
+    INSERT INTO VOCE_CONTABILE (NomeVoceContabile, Username_Amministratore, Descrizione) VALUES (VoceContabile, UsernameAmministratore, Descrizione);
 END |
 DELIMITER ;
 
@@ -131,7 +134,7 @@ DROP PROCEDURE IF EXISTS AssociaRevisore;
 DELIMITER |
 CREATE PROCEDURE AssociaRevisore( IN P_Username_Revisore VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE)
 BEGIN
-    INSERT INTO VALUTA (Username, RagioneSociale, DataCreazione)
+    INSERT INTO VALUTA_GIUDIZIO (Username_Revisore, RagioneSociale, DataCreazione)
     VALUES (P_Username_Revisore, P_RagioneSociale, P_DataCreazione);
 END |
 DELIMITER ;
