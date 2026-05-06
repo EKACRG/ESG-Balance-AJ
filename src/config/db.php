@@ -13,10 +13,8 @@ try {
         $password
     );
 } catch (PDOException $e) {
-        die("Errore connessione DB: " . $e->getMessage());
-    // finche non si aggiunge il file error.phpnonono
-    //  $output = "Errore di connessione: " . $e->getMessage();
-    // include __DIR__ . "/../Views/error.php";
-    // exit;
+    $output = "Errore di connessione: " . $e->getMessage();
+    include __DIR__ . "/../Views/error.php";
+    exit;
 }
 ?>
