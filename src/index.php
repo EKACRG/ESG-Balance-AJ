@@ -15,11 +15,6 @@ $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = trim($uri, '/');
 $parts = explode('/', $uri);
 
-// Rimuove index.php SE PRESENTE
-if (isset($parts[0]) && $parts[0] === 'index.php') {
-    array_shift($parts);
-}
-
 $controllerName = isset($parts[0]) && $parts[0] !== '' ? ucfirst($parts[0]) . 'Controller' : null;
 $methodName = isset($parts[1]) && $parts[1] !== '' ? $parts[1] : 'index';
 $controllerClass = 'Controllers\\' . $controllerName;
