@@ -135,9 +135,41 @@ class DatabaseModel {
     }
 
     // Inserisce una nuova competenza per un revisore ESG 
-    public function inserisciCompetenza(string $username, string $competenza, int $livello): void {
-    $stmt = $this->pdo->prepare("CALL InserimentoCompetenze(?,?,?)");
-    $stmt->execute([$username, $competenza, $livello]);
+    public function inserisciCompetenza(
+        string $username, 
+        string $competenza, 
+        int $livello
+    ): void {
+
+        // Prepariamo la chiamata alla Stored Procedure MySQL con 3 parametri    
+        $stmt = $this->pdo->prepare("CALL InserimentoCompetenze(?,?,?)");
+
+        // Eseguiamo la query passando l'array con le 3 variabili esattamente nell'ordine previsto
+        $stmt->execute([$username, $competenza, $livello]);
+    }
+
+    // Innserisce una nuova nota testuale su una voce di bilancio
+    public function inserisciNota(
+        string $username, 
+        string $nomeVoceContabile, 
+        string $ragioneSociale, 
+        string $dataCreazione, 
+        string $dataNota, 
+        string $testo
+    ): void {
+        
+        // Prepariamo la chiamata alla Stored Procedure MySQL con 6 parametri
+        $stmt = $this->pdo->prepare("CALL InserimentoAnnotazione(?, ?, ?, ?, ?, ?)");
+        
+        // Eseguiamo la query passando l'array con le 6 variabili esattamente nell'ordine previsto
+        $stmt->execute([
+            $username, 
+            $nomeVoceContabile, 
+            $ragioneSociale, 
+            $dataCreazione, 
+            $dataNota, 
+            $testo
+        ]);
     }
 }
 ?>
