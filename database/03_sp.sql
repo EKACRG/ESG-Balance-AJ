@@ -26,19 +26,19 @@ BEGIN
     -- Controllo username già in uso
     IF EXISTS (SELECT 1 FROM UTENTI WHERE UsernameUtente = UTENTI.Username) THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Errore: Username già in uso';
+        SET MESSAGE_TEXT = 'Errore: Username esistente';
     END IF;
 
     -- Controllo CF esattametne 16 caratteri
     IF CHAR_LENGTH(CodiceFiscale) != 16 THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Errore: Codice Fiscale deve essere esattamente di 16 caratteri';
+        SET MESSAGE_TEXT = 'Errore: Codice fiscale deve essere esattamente di 16 caratteri';
     END IF;
 
     -- Controllo CF già in uso
     IF EXISTS (SELECT 1 FROM UTENTI WHERE CodiceFiscale = UTENTI.CF) THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Errore: Codice Fiscale già in uso';
+        SET MESSAGE_TEXT = 'Errore: Codice fiscale esistente';
     END IF;
 
     INSERT INTO UTENTI (Username, Password, CF, DataNascita, LuogoNascita) VALUES (UsernameUtente, Password, CodiceFiscale, DataNascita, LuogoNascita);
@@ -71,7 +71,7 @@ CREATE PROCEDURE RegistraResponsabile(IN UsernameUtente VARCHAR(30), IN Curricul
 BEGIN
     IF CurriculumVitae NOT LIKE '%.pdf' THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Errore: CurriculumVitae deve essere in formato PDF (.pdf)';
+        SET MESSAGE_TEXT = 'Errore: Curriculum Vitae deve essere in formato PDF (.pdf)';
     END IF;
 
     INSERT INTO RESPONSABILE_AZIENDALE (Username, CurriculumVitae) VALUES (UsernameUtente, CurriculumVitae);
@@ -95,7 +95,7 @@ BEGIN
     -- Controllo nome indicatore già in uso
     IF EXISTS (SELECT 1 FROM INDICATORE_ESG WHERE Indicatore = INDICATORE_ESG.NomeIndicatore) THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Errore: esiste già un indicatore ESG con questo nome';
+        SET MESSAGE_TEXT = 'Errore: Indicatore ESG esistente';
     END IF;
 
     -- Controllo coerenza campi per tipo Ambiente
@@ -122,7 +122,7 @@ BEGIN
     -- Controllo nome voce contabile già in uso
     IF EXISTS (SELECT 1 FROM VOCE_CONTABILE WHERE VoceContabile = VOCE_CONTABILE.NomeVoceContabile) THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Errore: Nome voce contabile già in uso'; 
+        SET MESSAGE_TEXT = 'Errore: Nome voce contabile esistente'; 
     END IF;
 
     INSERT INTO VOCE_CONTABILE (NomeVoceContabile, Username_Amministratore, Descrizione) VALUES (VoceContabile, UsernameAmministratore, Descrizione);
@@ -150,7 +150,7 @@ BEGIN
         VALUES (P_Username_Revisore,P_NomeCompetenza,P_Livello);
         ELSE
 			SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Errore: il livello di competenza deve essere compreso tra 0 e 5';
+            SET MESSAGE_TEXT = 'Errore: Il livello di competenza deve essere compreso tra 0 e 5';
 		END IF;
 END |
 DELIMITER ;

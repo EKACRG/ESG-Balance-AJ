@@ -40,12 +40,13 @@ class AuthController {
             $tipoUtente = $_POST["tipoUtente"] ?? "";
             $curriculumVitae = $_POST["curriculumVitae"] ?? null;
 
-            if ($this->dbModel->signup($username, $password, $cf, $dataNascita, $luogoNascita, $email, $tipoUtente, $curriculumVitae)) {
+            try {
+                $this->dbModel->signup($username, $password, $cf, $dataNascita, $luogoNascita, $email, $tipoUtente, $curriculumVitae);
                 header("Location: /auth/login");
                 exit;
             }
-            else {
-                $errore = "Errore nella creazione dell'utente";
+            catch (\PDOException $e) {
+                $errore = $e->errorInfo[2];
             }
         }
 
