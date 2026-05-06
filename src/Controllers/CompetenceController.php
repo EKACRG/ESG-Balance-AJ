@@ -1,7 +1,7 @@
 <?php
 namespace Controllers;
 
-class Sp05Controller{
+class CompetenceController{
     private $dbModel;
 
     public function __construct($dbModel){
