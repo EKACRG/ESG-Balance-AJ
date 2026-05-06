@@ -26,13 +26,13 @@ class NoteController {
             $testo = $_POST['testo'];
 
             try {                 
-                $this->dbModel->nomeDelTuoMetodo($username, $nomeVoce, $ragioneSociale, $dataCreazione, $dataNota, $testo);
+                $this->dbModel->inserisciNota($username, $nomeVoce, $ragioneSociale, $dataCreazione, $dataNota, $testo);
                 $data['messaggio_successo'] = "Operazione completata: Nota aggiunta con successo alla voce di bilancio!";             
             } catch (\PDOException $e) {                 
                 $data['messaggio_errore'] = "Errore dal Database: " . $e->getMessage();             
             }             
         }
-        
+
         include __DIR__ . '/../Views/NoteView.php';
     }
 }
