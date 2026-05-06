@@ -5,7 +5,7 @@
     </head>
     <body>
         <h1>Si è verificato un errore...</h1>
-        <p><?= isset($errore) ? $errore : "Errore sconosciuto" ?></p>
-        <a href="/">Torna alla home</a>
+        <h2><?= isset($errore) ? $errore : "Errore sconosciuto" ?></h2>
+        <a href="/stats">Torna alla home</a>
     </body>
 </html>
