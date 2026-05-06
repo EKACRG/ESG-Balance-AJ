@@ -30,6 +30,6 @@ class Sp05Controller{
             }
         }
 
-        include __DIR__ . '/../Views/SP05Views.php';
+        include __DIR__ . '/../Views/CompetenceViews.php';
     }
 }
