@@ -136,7 +136,7 @@ class DatabaseModel {
 
     // Inserisce una nuova competenza per un revisore ESG 
     public function inserisciCompetenza(
-        string $username, 
+        string $usernameRevisore, 
         string $competenza, 
         int $livello
     ): void {
@@ -145,12 +145,15 @@ class DatabaseModel {
         $stmt = $this->pdo->prepare("CALL InserimentoCompetenze(?,?,?)");
 
         // Eseguiamo la query passando l'array con le 3 variabili esattamente nell'ordine previsto
-        $stmt->execute([$username, $competenza, $livello]);
+        $stmt->execute([
+            $usernameRevisore, 
+            $competenza, 
+            $livello]);
     }
 
     // Innserisce una nuova nota testuale su una voce di bilancio
     public function inserisciNota(
-        string $username, 
+        string $usernameRevisore, 
         string $nomeVoceContabile, 
         string $ragioneSociale, 
         string $dataCreazione, 
@@ -163,7 +166,7 @@ class DatabaseModel {
         
         // Eseguiamo la query passando l'array con le 6 variabili esattamente nell'ordine previsto
         $stmt->execute([
-            $username, 
+            $usernameRevisore, 
             $nomeVoceContabile, 
             $ragioneSociale, 
             $dataCreazione, 
@@ -171,5 +174,31 @@ class DatabaseModel {
             $testo
         ]);
     }
+
+    // Registra il giudizio finale di un revisore
+   public function salvaGiudizio(
+        string $usernameRevisore, 
+        string $ragioneSociale, 
+        string $dataCreazione, 
+        string $esito, 
+        string $campoRilievi,
+        string $dataGiudizio
+
+    ): void {
+
+        // Prepariamo la chiamata alla Stored Procedure MySQL con 6 parametri
+        $stmt = $this->pdo->prepare("CALL InserimentoGiudizio(?, ?, ?, ?, ?, ?)");
+        
+        // Eseguiamo la query passando l'array con le 6 variabili esattamente nell'ordine previsto
+        $stmt->execute([
+            $usernameRevisore, 
+            $ragioneSociale, 
+            $dataCreazione, 
+            $esito, 
+            $campoRilievi,
+            $dataGiudizio
+        ]);
+    }
+ 
 }
 ?>
