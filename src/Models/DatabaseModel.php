@@ -199,6 +199,33 @@ class DatabaseModel {
             $dataGiudizio
         ]);
     }
+
+    // Registra una nuova azienda collegata a un Responsabile Aziendale
+    public function registraAzienda(
+        string $usernameResponsabile, 
+        string $ragioneSociale, 
+        string $nome, 
+        string $partitaIva, 
+        string $settore, 
+        int $numDipendenti, 
+        string $logoPath
+    ): void {
+        
+        // Prepariamo la chiamata alla Stored Procedure MySQL con 7 parametri
+        $stmt = $this->pdo->prepare("CALL RegistraAzienda(?, ?, ?, ?, ?, ?, ?)");
+        
+        // Eseguiamo la query passando l'array nell'ordine corretto
+        $stmt->execute([
+            $usernameResponsabile, 
+            $ragioneSociale, 
+            $nome, 
+            $partitaIva, 
+            $settore, 
+            $numDipendenti, 
+            $logoPath
+        ]);
+    }
+
  
 }
 ?>
