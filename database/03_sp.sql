@@ -78,6 +78,20 @@ BEGIN
 END |
 DELIMITER ;
 
+-- Inserisci email aggiuntive
+DROP PROCEDURE IF EXISTS InserisciEmail;
+DELIMITER |
+CREATE PROCEDURE InserisciEmail(IN UsernameUtente VARCHAR(30), IN IndirizzoEmail VARCHAR(30))
+BEGIN
+    IF EXISTS (SELECT 1 FROM EMAIL WHERE IndirizzoEmail = EMAIL.IndirizzoEmail) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Errore: Email esistente';
+    END IF;
+
+    INSERT INTO EMAIL (Username, IndirizzoEmail) VALUES (UsernameUtente, IndirizzoEmail);
+END |
+DELIMITER ;
+
 -- Popolamento della lista degli indicatori ESG
 DROP PROCEDURE IF EXISTS InserisciIndicatoreESG;
 DELIMITER |

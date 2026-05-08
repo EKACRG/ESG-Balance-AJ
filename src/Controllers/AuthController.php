@@ -39,14 +39,21 @@ class AuthController {
             $email = $_POST["email"] ?? "";
             $tipoUtente = $_POST["tipoUtente"] ?? "";
             $curriculumVitae = $_POST["curriculumVitae"] ?? null;
+            $emailAggiuntive = $_POST["emailAggiuntive"] ?? [];
 
             try {
-                $this->dbModel->signup($username, $password, $cf, $dataNascita, $luogoNascita, $email, $tipoUtente, $curriculumVitae);
+                $this->dbModel->signup($username, $password, $cf, $dataNascita, $luogoNascita, $email, $tipoUtente, $curriculumVitae, $emailAggiuntive);
                 header("Location: /auth/login");
                 exit;
             }
             catch (\PDOException $e) {
-                $errore = $e->errorInfo[2];
+                if ($e->getCode() === "45000") {
+                    $errore = $e->errorInfo[2];
+                }
+                else {
+                    error_log($e->getMessage());
+                    $errore = "Errore durante la registazione. Riprova.";
+                }
             }
         }
 

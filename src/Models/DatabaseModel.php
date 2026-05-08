@@ -82,7 +82,8 @@ class DatabaseModel {
         string $luogoNascita,
         string $email,
         string $tipoUtente,
-        ?string $curriculumVitae = null
+        ?string $curriculumVitae = null,
+        array $emailAggiuntive = []
     ): bool {
         // Per non salvare la password in chiaro
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
@@ -112,6 +113,16 @@ class DatabaseModel {
                 ":username" => $username,
                 ":curriculumVitae" => $curriculumVitae
             ]);
+        }
+
+        foreach ($emailAggiuntive as $ea) {
+            if (!empty($ea)) {
+                $stmt = $this->pdo->prepare("CALL InserisciEmail(:username, :email)");
+                $stmt->execute([
+                    ":username" => $username,
+                    ":email" => $ea
+                ]);
+            }
         }
 
         return true;
