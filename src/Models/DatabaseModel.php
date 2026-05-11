@@ -235,7 +235,7 @@ class DatabaseModel {
 
     // Recupera tutte le voci del Template del bilancio
     public function getVociTemplate(): array {
-        $stmt = $this->pdo->query("SELECT Nome, Descrizione FROM VOCE_CONTABILE");
+        $stmt = $this->pdo->query("SELECT NomeVoceContabile, Descrizione FROM VOCE_CONTABILE");
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
@@ -246,10 +246,10 @@ class DatabaseModel {
     }
 
     // Popola le singole voci
-    public function popolaVoceBilancio(string $nomeVoce, string $ragioneSociale, string $dataCreazione, float $valoreNumerico): void {
+    public function popolaVoceBilancio(string $NomeVoceBilancio, string $ragioneSociale, string $dataCreazione, float $valoreNumerico): void {
         $stmt = $this->pdo->prepare("CALL PopolaVoceBilancio(?, ?, ?, ?)");
         $stmt->execute([
-            $nomeVoce, 
+            $NomeVoceBilancio, 
             $ragioneSociale, 
             $dataCreazione, 
             $valoreNumerico]);
