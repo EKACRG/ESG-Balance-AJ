@@ -226,6 +226,34 @@ class DatabaseModel {
         ]);
     }
 
- 
+    // Recupera le aziende gestite da uno specifico responsabile
+    public function getAziendeByResponsabile(string $usernameResponsabile): array {
+        $stmt = $this->pdo->prepare("SELECT RagioneSociale, Nome FROM AZIENDA WHERE Username_Responsabile = ?");
+        $stmt->execute([$usernameResponsabile]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    // Recupera tutte le voci del Template del bilancio
+    public function getVociTemplate(): array {
+        $stmt = $this->pdo->query("SELECT Nome, Descrizione FROM VOCE_CONTABILE");
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    // Crea l'intestazione del bilancio
+    public function creaBilancio(string $ragioneSociale, string $dataCreazione): void {
+        $stmt = $this->pdo->prepare("CALL CreaBilancio(?, ?)");
+        $stmt->execute([$ragioneSociale, $dataCreazione]);
+    }
+
+    // Popola le singole voci
+    public function popolaVoceBilancio(string $nomeVoce, string $ragioneSociale, string $dataCreazione, float $valoreNumerico): void {
+        $stmt = $this->pdo->prepare("CALL PopolaVoceBilancio(?, ?, ?, ?)");
+        $stmt->execute([
+            $nomeVoce, 
+            $ragioneSociale, 
+            $dataCreazione, 
+            $valoreNumerico]);
+    }
+
 }
 ?>
