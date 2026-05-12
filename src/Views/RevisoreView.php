@@ -43,15 +43,15 @@
 
     <div class="dashboard-menu">
         <a href="/Competence" class="btn">
-            O5 - Inserisci Nuova Competenza
+            Inserisci Nuova Competenza
         </a>
         
         <a href="/Note" class="btn">
-            O6 - Inserisci Nota su Voce di Bilancio
+            Inserisci Nota su Voce di Bilancio
         </a>
         
         <a href="/Giudizio" class="btn">
-            O7 - Emetti Giudizio Complessivo
+            Emetti Giudizio Complessivo
         </a>
     </div>
 </body>
