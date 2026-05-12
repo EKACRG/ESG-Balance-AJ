@@ -200,6 +200,8 @@ class DatabaseModel {
         ]);
     }
 
+    // METODI PER AZIENDA
+
     // Registra una nuova azienda collegata a un Responsabile Aziendale
     public function registraAzienda(
         string $usernameResponsabile, 
@@ -225,6 +227,8 @@ class DatabaseModel {
             $logoPath
         ]);
     }
+
+    // METODI PER BILANCIO
 
     // Recupera le aziende gestite da uno specifico responsabile
     public function getAziendeByResponsabile(string $usernameResponsabile): array {
@@ -254,6 +258,42 @@ class DatabaseModel {
             $dataCreazione, 
             $valoreNumerico]);
     }
+
+    // METODI PER INDICATORE ESG
+
+    // Recupera tutti gli Indicatori ESG disponibili a sistema
+    public function getIndicatoriESG(): array {
+        $stmt = $this->pdo->query("SELECT NomeIndicatore FROM INDICATORE_ESG");
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    // Recupera tutte le voci di bilancio associate alle aziende del Responsabile loggato
+    public function getVociBilancioResponsabile(string $usernameResponsabile): array {
+        $stmt = $this->pdo->prepare("
+            SELECT NomeVoceBilancio, RagioneSociale, DataCreazione 
+            FROM VOCE_BILANCIO 
+            WHERE RagioneSociale IN (
+                SELECT RagioneSociale FROM AZIENDA WHERE Username_Responsabile = ?
+            )
+        ");
+        $stmt->execute([$usernameResponsabile]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    // Chiama la tua Stored Procedure per inserire i dati nella tabella MEMORIZZA
+    public function inserisciValoreESG(string $nomeIndicatore, string $nomeVoce, string $ragioneSociale, string $dataCreazione, float $valore, string $fonte, string $dataRilevazione): void {
+        $stmt = $this->pdo->prepare("CALL InserisciValoreESG(?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([
+            $nomeIndicatore, 
+            $nomeVoce, 
+            $ragioneSociale, 
+            $dataCreazione, 
+            $valore, 
+            $fonte, 
+            $dataRilevazione
+        ]);
+    }
+
 
 }
 ?>
