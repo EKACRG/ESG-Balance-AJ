@@ -310,5 +310,20 @@ class DatabaseModel {
         
         return $conteggio > 0;
     }
+
+    //METODI PER REVISORE
+
+    // Controlla se il revisore ha almeno un bilancio assegnato da valutare
+    public function haBilanciDaValutare(string $usernameRevisore): bool {
+        $stmt = $this->pdo->prepare("
+            SELECT COUNT(*) 
+            FROM VALUTA_GIUDIZIO 
+            WHERE Username_Revisore = ? AND Esito IS NULL
+        ");
+        $stmt->execute([$usernameRevisore]);
+        $conteggio = $stmt->fetchColumn();
+        
+        return $conteggio > 0;
+    }
 }
 ?>
