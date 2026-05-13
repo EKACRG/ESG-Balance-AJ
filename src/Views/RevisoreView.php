@@ -34,6 +34,13 @@
         .btn:hover {
             background-color: #004494;
         }
+         .btn-disabled {
+            background-color: #cccccc;
+            border: 1px solid #999999;
+            color: #666666;
+            pointer-events: none; /* Impedisce il click */
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -46,13 +53,30 @@
             Inserisci Nuova Competenza
         </a>
         
-        <a href="/Note" class="btn">
-            Inserisci Nota su Voce di Bilancio
-        </a>
-        
-        <a href="/Giudizio" class="btn">
-            Emetti Giudizio Complessivo
-        </a>
+        <!-- LOGICA IF PER LE VALUTAZIONI -->
+        <?php if ($sbloccaValutazioni): ?>
+            <!-- Se ha bilanci assegnati, bottoni blu cliccabili -->
+            <a href="/Note" class="btn">
+                Inserisci Nota su Voce di Bilancio
+            </a>
+            
+            <a href="/Giudizio" class="btn">
+                Emetti Giudizio Complessivo
+            </a>
+        <?php else: ?>
+            <!-- Se non ha bilanci, bottoni grigi bloccati -->
+            <a href="#" class="btn btn-disabled">
+                Inserisci Nota su Voce di Bilancio - Non disponibile
+            </a>
+            
+            <a href="#" class="btn btn-disabled">
+                Emetti Giudizio Complessivo - Non disponibile
+            </a>
+            <!-- Messaggio di avviso per il revisore -->
+            <small style="color: #d9534f; margin-top: -10px; font-weight: bold;">
+                * Nessun bilancio assegnato al momento dall'Amministratore
+            </small>
+        <?php endif; ?>
     </div>
 </body>
 </html>
