@@ -10,7 +10,7 @@ class LogoutController {
 
     public function index() {
         $this->dbModel->logout();
-        header("Location: /Login");
+        header("Location: /auth/Login");
         exit(); 
     }
 }
