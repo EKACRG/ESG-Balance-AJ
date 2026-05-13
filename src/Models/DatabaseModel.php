@@ -294,6 +294,21 @@ class DatabaseModel {
         ]);
     }
 
+    // METODI PER RESPONSABILE
 
+    // Controlla se il responsabile ha già creato almeno un bilancio
+    public function haAlmenoUnBilancio(string $usernameResponsabile): bool {
+        $stmt = $this->pdo->prepare("
+            SELECT COUNT(*) 
+            FROM BILANCIO 
+            WHERE RagioneSociale IN (
+                SELECT RagioneSociale FROM AZIENDA WHERE Username_Responsabile = ?
+            )
+        ");
+        $stmt->execute([$usernameResponsabile]);
+        $conteggio = $stmt->fetchColumn();
+        
+        return $conteggio > 0;
+    }
 }
 ?>
