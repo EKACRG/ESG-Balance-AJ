@@ -3,8 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>O9 - Crea Bilancio</title>
+    <style>
+    .btn-back {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #6c757d; /* Grigio neutro per non confondersi col tasto Salva */
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-bottom: 20px; /* Spazio per staccarlo dal form sottostante */
+        }
+        .btn-back:hover {
+            background-color: #5a6268;
+        }
+    </style>
 </head>
 <body>
+    <a href="/Responsabile" class="btn-back">⬅ Torna alla Dashboard</a>
     <h2>Creazione Nuovo Bilancio di Esercizio</h2>
 
     <?php if (!empty($data['messaggio_successo'])): ?>

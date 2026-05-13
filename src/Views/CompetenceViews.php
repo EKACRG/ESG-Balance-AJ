@@ -3,9 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <title>O5 - Inserisci Competenza</title>
+    <style>
+    .btn-back {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #6c757d; /* Grigio neutro per non confondersi col tasto Salva */
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-bottom: 20px; /* Spazio per staccarlo dal form sottostante */
+        }
+        .btn-back:hover {
+            background-color: #5a6268;
+        }
+    </style>
 </head>
 <body>
-    <h2>Aggiungi una nuova competenza (Revisore ESG)</h2>
+    <a href="/Revisore" class="btn-back">⬅ Torna alla Dashboard</a>
+    <h2>Aggiungi una nuova competenza</h2>
 
     <?php if (!empty($data['messaggio_successo'])): ?>
         <h3 style="color: green;"><?= $data['messaggio_successo'] ?></h3>
