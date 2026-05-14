@@ -5,7 +5,7 @@
     <title>Dashboard Revisore ESG</title>
 </head>
 <body>
-    <a href="/Logout" class="btn-logout">⬅ Esci - Logout</a>
+    <a href="/auth/logout" class="btn-logout">⬅ Esci - Logout</a>
     <!-- Stampiamo l'username in modo sicuro usando htmlspecialchars come consigliato dal manuale -->
     <h2>Benvenuto nella tua Area Riservata, <?= htmlspecialchars($username, ENT_QUOTES, 'UTF-8') ?>!</h2>
     <p>Seleziona l'operazione che desideri effettuare:</p>
