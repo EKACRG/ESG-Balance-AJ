@@ -59,7 +59,7 @@ class DatabaseModel {
         $stmt = $this->pdo->prepare("SELECT * FROM UTENTI WHERE Username = :username");
         $stmt->execute([":username" => $_SESSION["username"]]);
         $user = $stmt->fetch(\PDO::FETCH_ASSOC);
-        if (!empty($user) && password_verify($_SESSION["password"], $user["Password"])) {
+        if (!empty($user) && $_SESSION["password"] === $user["Password"]) {
             return true;
         }
 
@@ -156,13 +156,14 @@ class DatabaseModel {
         ?string $ambitoSociale,
         ?string $frequenzaRilevazione
     ): void {
-        $stmt = $this->pdo->prepare("CALL InserisciIndicatoreESG(:indicatore, :usernameAmministratore, :immagine, :rilevanza, :tipoIndicatore, :codiceNormativa, :ambitoSociale, :frequenzaRilevazione");
+        $stmt = $this->pdo->prepare("CALL InserisciIndicatoreESG(:indicatore, :usernameAmministratore, :immagine, :rilevanza, :tipoIndicatore, :codiceNormativa, :ambitoSociale, :frequenzaRilevazione)");
         $stmt->execute([
             ":indicatore" => $indicatore,
             ":usernameAmministratore" => $usernameAmministratore,
             ":immagine" => $immagine,
             ":rilevanza" => $rilevanza,
-            ":tipoIndicatore" => $codiceNormativa,
+            ":tipoIndicatore" => $tipoIndicatore,
+            ":codiceNormativa" => $codiceNormativa,
             ":ambitoSociale" => $ambitoSociale,
             ":frequenzaRilevazione" => $frequenzaRilevazione
         ]);

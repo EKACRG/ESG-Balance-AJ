@@ -1,27 +1,21 @@
 <?php
 namespace Controllers;
 
-class AmministratoreController
-{
+class AmministratoreController {
     private $dbModel;
 
-    public function __construct(DBModel $dbModel)
-    {
+    public function __construct($dbModel) {
         $this->dbModel = $dbModel;
 
         // Controllo utente loggato e tipo utente
-        if (
-            !this->dbModel->isLoggedIn() ||
-            $_SESSION["tipo_utente"] !== "amministratore"
-        ) {
-            header("Location: /auth/login");
-            exit();
+        if (!$this->dbModel->isLoggedIn() || $_SESSION["tipo_utente"] !== "amministratore") {
+            header("Location: /stats/index");
+            exit;
         }
     }
 
     // Dashboard amministratore
-    public function index()
-    {
+    public function index() {
         include BASE_PATH . "/Views/Amministratore/AmministratoreView.php";
     }
 
