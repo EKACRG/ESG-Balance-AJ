@@ -146,9 +146,195 @@ class DatabaseModel {
     }
 
     // Inserisce una nuova competenza per un revisore ESG 
-    public function inserisciCompetenza(string $username, string $competenza, int $livello): void {
-    $stmt = $this->pdo->prepare("CALL InserimentoCompetenze(?,?,?)");
-    $stmt->execute([$username, $competenza, $livello]);
+    public function inserisciCompetenza(
+        string $usernameRevisore, 
+        string $competenza, 
+        int $livello
+    ): void {
+
+        // Prepariamo la chiamata alla Stored Procedure MySQL con 3 parametri    
+        $stmt = $this->pdo->prepare("CALL InserimentoCompetenze(?,?,?)");
+
+        // Eseguiamo la query passando l'array con le 3 variabili esattamente nell'ordine previsto
+        $stmt->execute([
+            $usernameRevisore, 
+            $competenza, 
+            $livello]);
+    }
+
+    // Innserisce una nuova nota testuale su una voce di bilancio
+    public function inserisciNota(
+        string $usernameRevisore, 
+        string $nomeVoceContabile, 
+        string $ragioneSociale, 
+        string $dataCreazione, 
+        string $dataNota, 
+        string $testo
+    ): void {
+        
+        // Prepariamo la chiamata alla Stored Procedure MySQL con 6 parametri
+        $stmt = $this->pdo->prepare("CALL InserimentoAnnotazione(?, ?, ?, ?, ?, ?)");
+        
+        // Eseguiamo la query passando l'array con le 6 variabili esattamente nell'ordine previsto
+        $stmt->execute([
+            $usernameRevisore, 
+            $nomeVoceContabile, 
+            $ragioneSociale, 
+            $dataCreazione, 
+            $dataNota, 
+            $testo
+        ]);
+    }
+
+    // Registra il giudizio finale di un revisore
+   public function salvaGiudizio(
+        string $usernameRevisore, 
+        string $ragioneSociale, 
+        string $dataCreazione, 
+        string $esito, 
+        string $campoRilievi,
+        string $dataGiudizio
+
+    ): void {
+
+        // Prepariamo la chiamata alla Stored Procedure MySQL con 6 parametri
+        $stmt = $this->pdo->prepare("CALL InserimentoGiudizio(?, ?, ?, ?, ?, ?)");
+        
+        // Eseguiamo la query passando l'array con le 6 variabili esattamente nell'ordine previsto
+        $stmt->execute([
+            $usernameRevisore, 
+            $ragioneSociale, 
+            $dataCreazione, 
+            $esito, 
+            $campoRilievi,
+            $dataGiudizio
+        ]);
+    }
+
+    // METODI PER AZIENDA
+
+    // Registra una nuova azienda collegata a un Responsabile Aziendale
+    public function registraAzienda(
+        string $usernameResponsabile, 
+        string $ragioneSociale, 
+        string $nome, 
+        string $partitaIva, 
+        string $settore, 
+        int $numDipendenti, 
+        string $logoPath
+    ): void {
+        
+        // Prepariamo la chiamata alla Stored Procedure MySQL con 7 parametri
+        $stmt = $this->pdo->prepare("CALL RegistraAzienda(?, ?, ?, ?, ?, ?, ?)");
+        
+        // Eseguiamo la query passando l'array nell'ordine corretto
+        $stmt->execute([
+            $usernameResponsabile, 
+            $ragioneSociale, 
+            $nome, 
+            $partitaIva, 
+            $settore, 
+            $numDipendenti, 
+            $logoPath
+        ]);
+    }
+
+    // METODI PER BILANCIO
+
+    // Recupera le aziende gestite da uno specifico responsabile
+    public function getAziendeByResponsabile(string $usernameResponsabile): array {
+        $stmt = $this->pdo->prepare("SELECT RagioneSociale, Nome FROM AZIENDA WHERE Username_Responsabile = ?");
+        $stmt->execute([$usernameResponsabile]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    // Recupera tutte le voci del Template del bilancio
+    public function getVociTemplate(): array {
+        $stmt = $this->pdo->query("SELECT NomeVoceContabile, Descrizione FROM VOCE_CONTABILE");
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    // Crea l'intestazione del bilancio
+    public function creaBilancio(string $ragioneSociale, string $dataCreazione): void {
+        $stmt = $this->pdo->prepare("CALL CreaBilancio(?, ?)");
+        $stmt->execute([$ragioneSociale, $dataCreazione]);
+    }
+
+    // Popola le singole voci
+    public function popolaVoceBilancio(string $NomeVoceBilancio, string $ragioneSociale, string $dataCreazione, float $valoreNumerico): void {
+        $stmt = $this->pdo->prepare("CALL PopolaVoceBilancio(?, ?, ?, ?)");
+        $stmt->execute([
+            $NomeVoceBilancio, 
+            $ragioneSociale, 
+            $dataCreazione, 
+            $valoreNumerico]);
+    }
+
+    // METODI PER INDICATORE ESG
+
+    // Recupera tutti gli Indicatori ESG disponibili a sistema
+    public function getIndicatoriESG(): array {
+        $stmt = $this->pdo->query("SELECT NomeIndicatore FROM INDICATORE_ESG");
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    // Recupera tutte le voci di bilancio associate alle aziende del Responsabile loggato
+    public function getVociBilancioResponsabile(string $usernameResponsabile): array {
+        $stmt = $this->pdo->prepare("
+            SELECT NomeVoceBilancio, RagioneSociale, DataCreazione 
+            FROM VOCE_BILANCIO 
+            WHERE RagioneSociale IN (
+                SELECT RagioneSociale FROM AZIENDA WHERE Username_Responsabile = ?
+            )
+        ");
+        $stmt->execute([$usernameResponsabile]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    // Chiama la tua Stored Procedure per inserire i dati nella tabella MEMORIZZA
+    public function inserisciValoreESG(string $nomeIndicatore, string $nomeVoce, string $ragioneSociale, string $dataCreazione, float $valore, string $fonte, string $dataRilevazione): void {
+        $stmt = $this->pdo->prepare("CALL InserisciValoreESG(?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([
+            $nomeIndicatore, 
+            $nomeVoce, 
+            $ragioneSociale, 
+            $dataCreazione, 
+            $valore, 
+            $fonte, 
+            $dataRilevazione
+        ]);
+    }
+
+    // METODI PER RESPONSABILE
+
+    // Controlla se il responsabile ha già creato almeno un bilancio
+    public function haAlmenoUnBilancio(string $usernameResponsabile): bool {
+        $stmt = $this->pdo->prepare("
+            SELECT COUNT(*) 
+            FROM BILANCIO 
+            WHERE RagioneSociale IN (
+                SELECT RagioneSociale FROM AZIENDA WHERE Username_Responsabile = ?
+            )
+        ");
+        $stmt->execute([$usernameResponsabile]);
+        $conteggio = $stmt->fetchColumn();
+        
+        return $conteggio > 0;
+    }
+
+    //METODI PER REVISORE
+
+    // Controlla se il revisore ha almeno un bilancio assegnato da valutare
+    public function haBilanciDaValutare(string $usernameRevisore): bool {
+        $stmt = $this->pdo->prepare("
+            SELECT COUNT(*) 
+            FROM VALUTA_GIUDIZIO 
+            WHERE Username_Revisore = ? AND Esito IS NULL
+        ");
+        $stmt->execute([$usernameRevisore]);
+        $conteggio = $stmt->fetchColumn();
+        
+        return $conteggio > 0;
     }
 }
 ?>

@@ -5,7 +5,8 @@
     <title>O5 - Inserisci Competenza</title>
 </head>
 <body>
-    <h2>Aggiungi una nuova competenza (Revisore ESG)</h2>
+    <a href="/Revisore" class="btn-back">⬅ Torna alla Dashboard</a>
+    <h2>Aggiungi una nuova competenza</h2>
 
     <?php if (!empty($data['messaggio_successo'])): ?>
         <h3 style="color: green;"><?= $data['messaggio_successo'] ?></h3>
