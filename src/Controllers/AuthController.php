@@ -16,7 +16,8 @@ class AuthController {
             $password = $_POST["password"] ?? "";
 
             if ($this->dbModel->login($username, $password)) {
-                header("Location: /stats/index");
+                $tipoUtente = $_SESSION["tipo_utente"];
+                header("Location: /" . $tipoUtente . "/index");
                 exit;
             }
             else {
