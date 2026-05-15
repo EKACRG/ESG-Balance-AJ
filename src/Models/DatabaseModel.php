@@ -9,7 +9,7 @@ class DatabaseModel {
         $this->pdo = $pdo;
     }
 
-    // STATS
+    // METODI PER STATS
     public function getNumAziende() {
         $stmt = $this->pdo->query("SELECT * FROM NUM_AZIENDE");
         return $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -30,7 +30,7 @@ class DatabaseModel {
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    // AUTH
+    // METODI PER AUTH
     // Login (verifica credenziali e crea sessione)
     public function login(string $username, string $password): bool {
         $stmt = $this->pdo->prepare("SELECT * FROM UTENTI WHERE Username = :username");
@@ -145,6 +145,29 @@ class DatabaseModel {
         return "responsabile";
     }
 
+    // Inserisce gli indicatori ESG
+    public function inserisciIndicatoriESG(
+        string $indicatore, 
+        string $usernameAmministratore, 
+        string $immagine,
+        string $rilevanza,
+        string $tipoIndicatore,
+        ?string $codiceNormativa,
+        ?string $ambitoSociale,
+        ?string $frequenzaRilevazione
+    ): void {
+        $stmt = $this->pdo->prepare("CALL InserisciIndicatoreESG(:indicatore, :usernameAmministratore, :immagine, :rilevanza, :tipoIndicatore, :codiceNormativa, :ambitoSociale, :frequenzaRilevazione");
+        $stmt->execute([
+            ":indicatore" => $indicatore,
+            ":usernameAmministratore" => $usernameAmministratore,
+            ":immagine" => $immagine,
+            ":rilevanza" => $rilevanza,
+            ":tipoIndicatore" => $codiceNormativa,
+            ":ambitoSociale" => $ambitoSociale,
+            ":frequenzaRilevazione" => $frequenzaRilevazione
+        ]);
+    }
+
     // Inserisce una nuova competenza per un revisore ESG 
     public function inserisciCompetenza(
         string $usernameRevisore, 
@@ -162,7 +185,7 @@ class DatabaseModel {
             $livello]);
     }
 
-    // Innserisce una nuova nota testuale su una voce di bilancio
+    // Inserisce una nuova nota testuale su una voce di bilancio
     public function inserisciNota(
         string $usernameRevisore, 
         string $nomeVoceContabile, 
@@ -212,7 +235,6 @@ class DatabaseModel {
     }
 
     // METODI PER AZIENDA
-
     // Registra una nuova azienda collegata a un Responsabile Aziendale
     public function registraAzienda(
         string $usernameResponsabile, 
@@ -240,7 +262,6 @@ class DatabaseModel {
     }
 
     // METODI PER BILANCIO
-
     // Recupera le aziende gestite da uno specifico responsabile
     public function getAziendeByResponsabile(string $usernameResponsabile): array {
         $stmt = $this->pdo->prepare("SELECT RagioneSociale, Nome FROM AZIENDA WHERE Username_Responsabile = ?");
@@ -271,7 +292,6 @@ class DatabaseModel {
     }
 
     // METODI PER INDICATORE ESG
-
     // Recupera tutti gli Indicatori ESG disponibili a sistema
     public function getIndicatoriESG(): array {
         $stmt = $this->pdo->query("SELECT NomeIndicatore FROM INDICATORE_ESG");
@@ -306,7 +326,6 @@ class DatabaseModel {
     }
 
     // METODI PER RESPONSABILE
-
     // Controlla se il responsabile ha già creato almeno un bilancio
     public function haAlmenoUnBilancio(string $usernameResponsabile): bool {
         $stmt = $this->pdo->prepare("
@@ -323,7 +342,6 @@ class DatabaseModel {
     }
 
     //METODI PER REVISORE
-
     // Controlla se il revisore ha almeno un bilancio assegnato da valutare
     public function haBilanciDaValutare(string $usernameRevisore): bool {
         $stmt = $this->pdo->prepare("
