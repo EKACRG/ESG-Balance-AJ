@@ -21,9 +21,9 @@
             </select>
 
             <label>Bilancio:</label>
-            <select name="ragioneSociale" id="bilancio" required>
+            <select name="bilancio" required>
                 <?php foreach($bilanci as $bilancio): ?>
-                    <option value="<?= $bilancio["RagioneSociale"] ?>|<?= $bilancio["RagioneSociale"] ?>">
+                    <option value="<?= $bilancio["RagioneSociale"] ?>|<?= $bilancio["DataCreazione"] ?>">
                         <?= $bilancio["RagioneSociale"] ?> -
                         <?= $bilancio["DataCreazione"] ?> -
                         <?= $bilancio["Stato"] ?>

@@ -92,12 +92,12 @@ class AmministratoreController {
         $errore = null;
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $usernmaeRevisore = $_POST["usernameRevisore"] ?? "";
+            $usernameRevisore = $_POST["usernameRevisore"] ?? "";
             $bilancio = $_POST["bilancio"] ?? "";
             [$ragioneSociale, $dataCreazione] = explode("|", $bilancio); 
 
             try {
-                $this->dbModel->associaRevisore($usernmaeRevisore, $ragioneSociale, $dataCreazione);
+                $this->dbModel->associaRevisore($usernameRevisore, $ragioneSociale, $dataCreazione);
                 header("Location: /amministratore/associazione");
                 exit;
             }
