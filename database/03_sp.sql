@@ -148,6 +148,15 @@ DROP PROCEDURE IF EXISTS AssociaRevisore;
 DELIMITER |
 CREATE PROCEDURE AssociaRevisore( IN P_Username_Revisore VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE)
 BEGIN
+    IF EXISTS (
+        SELECT 1 
+        FROM VALUTA_GIUDIZIO
+        WHERE Username_Revisore = P_Username_Revisore AND RagioneSociale = P_RagioneSociale AND DataCreazione = P_DataCreazione
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Errore: associazione revisore-bilancio esistente';
+    END IF;
+
     INSERT INTO VALUTA_GIUDIZIO (Username_Revisore, RagioneSociale, DataCreazione)
     VALUES (P_Username_Revisore, P_RagioneSociale, P_DataCreazione);
 END |
