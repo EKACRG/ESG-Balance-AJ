@@ -170,10 +170,26 @@ class DatabaseModel {
         ]);
     }
 
-    // Insersce voce contabile (template)
+    // Inserisce voce contabile (template)
     public function inserisciVoceContabile($voceContabile, $usernameAmministratore, $descrizione): void {
         $stmt = $this->pdo->prepare("CALL InserisciVoceContabile(:voceContabile, :usernameAmministratore, :descrizione");
         $stmt->execute([":voceContabile" => $voceContabile, ":usernameAmministratore" => $usernameAmministratore, ":descrizione" => $descrizione]);
+    }
+
+    // Inserisce associazione tra revisore ESG e bilancio
+    public function associaRevisore($usernameRevisore, $ragioneSociale, $dataCreazione): void {
+        $stmt = $this->pdo->prepare("CALL AssociaRevisore(:usernameRevisore, :ragioneSociale, :dataCreazione)");
+        $stmt->execute([":usernameRevisore" => $usernameRevisore, ":ragioneSociale" => $ragioneSociale, ":dataCreazione" => $dataCreazione]);
+    }
+
+    public function getRevisori(): array {
+        $stmt = $this->pdo->query("SELECT Username FROM REVISORE_ESG");
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getBilanci(): array {
+        $stmt = $this->pdo->query("SELECT RagioneSociale, DataCreazione, Stato FROM BILANCIO WHERE Stato IN ('bozza', 'In revisione')");
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     // Inserisce una nuova competenza per un revisore ESG 
