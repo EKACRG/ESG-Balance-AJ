@@ -102,11 +102,13 @@ class AmministratoreController {
                 exit;
             }
             catch (\PDOException $e) {
-                $errore = $e->errorInfo[2];
-            }
-            else {
-                error_log($e->getMessage());
-                $errore = "Errore durante l'associazione. Riprova."
+                if ($e->getCode() === "45000") {
+                    $errore = $e->errorInfo[2];
+                }
+                else {
+                    error_log($e->getMessage());
+                    $errore = "Errore durante l'associazione. Riprova.";
+                }
             }
         }
 
