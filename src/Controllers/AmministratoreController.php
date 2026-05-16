@@ -93,8 +93,8 @@ class AmministratoreController {
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $usernmaeRevisore = $_POST["usernameRevisore"] ?? "";
-            $ragioneSociale = $_POST["ragioneSociale"] ?? "";
-            $dataCreazione = $_POST["dataCreazione"] ?? "";
+            $bilancio = $_POST["bilancio"] ?? "";
+            [$ragioneSociale, $dataCreazione] = explode("|", $bilancio); 
 
             try {
                 $this->dbModel->associaRevisore($usernmaeRevisore, $ragioneSociale, $dataCreazione);
