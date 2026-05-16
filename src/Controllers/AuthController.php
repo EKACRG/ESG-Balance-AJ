@@ -25,7 +25,7 @@ class AuthController {
             }
         }
 
-        include __DIR__ . "/../Views/LoginView.php";
+        include __DIR__ . "/../Views/Autenticazione/LoginView.php";
     }
 
     public function signup() {
@@ -58,7 +58,7 @@ class AuthController {
             }
         }
 
-        include __DIR__ . "/../Views/SignupView.php";
+        include __DIR__ . "/../Views/Autenticazione/SignupView.php";
     }
 
     public function logout() {
