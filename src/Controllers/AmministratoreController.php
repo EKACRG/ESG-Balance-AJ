@@ -78,6 +78,7 @@ class AmministratoreController {
                     $errore = $e->errorInfo[2];
                 }
                 else {
+                    error_log($e->getMessage());
                     $errore = "Errore durante la l'inserimento della voce contabile. Riprova.";
                 }
             }
@@ -87,6 +88,32 @@ class AmministratoreController {
     }
 
     // Associare revisore ESG ad un bilancio aziendale
-    // ...
+    public function associazione() {
+        $errore = null;
+
+        if ($_SERVER["REQUEST_METHOD"] === "POST") {
+            $usernmaeRevisore = $_POST["usernameRevisore"] ?? "";
+            $ragioneSociale = $_POST["ragioneSociale"] ?? "";
+            $dataCreazione = $_POST["dataCreazione"] ?? "";
+
+            try {
+                $this->dbModel->associaRevisore($usernmaeRevisore, $ragioneSociale, $dataCreazione);
+                header("Location: /amministratore/associazione");
+                exit;
+            }
+            catch (\PDOException $e) {
+                $errore = $e->errorInfo[2];
+            }
+            else {
+                error_log($e->getMessage());
+                $errore = "Errore durante l'associazione. Riprova."
+            }
+        }
+
+        $revisori = $this->dbModel->getRevisori();
+        $bilanci = $this->dbModel->getBilanci();
+
+        include BASE_PATH . "/Views/Amministratore/AssociazioneView.php";
+    }
 }
 ?>
