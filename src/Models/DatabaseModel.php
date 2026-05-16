@@ -172,7 +172,7 @@ class DatabaseModel {
 
     // Inserisce voce contabile (template)
     public function inserisciVoceContabile($voceContabile, $usernameAmministratore, $descrizione): void {
-        $stmt = $this->pdo->prepare("CALL InserisciVoceContabile(:voceContabile, :usernameAmministratore, :descrizione");
+        $stmt = $this->pdo->prepare("CALL InserisciVoceContabile(:voceContabile, :usernameAmministratore, :descrizione)");
         $stmt->execute([":voceContabile" => $voceContabile, ":usernameAmministratore" => $usernameAmministratore, ":descrizione" => $descrizione]);
     }
 

@@ -79,7 +79,7 @@ class AmministratoreController {
                 }
                 else {
                     error_log($e->getMessage());
-                    $errore = "Errore durante la l'inserimento della voce contabile. Riprova.";
+                    $errore = "Errore durante l'inserimento della voce contabile. Riprova.";
                 }
             }
         }
