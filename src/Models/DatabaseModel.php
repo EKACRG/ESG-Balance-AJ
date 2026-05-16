@@ -145,6 +145,7 @@ class DatabaseModel {
         return "responsabile";
     }
 
+    // METODI PER AMMINISTRATORE
     // Inserisce gli indicatori ESG
     public function inserisciIndicatoriESG(
         string $indicatore, 
@@ -167,6 +168,12 @@ class DatabaseModel {
             ":ambitoSociale" => $ambitoSociale,
             ":frequenzaRilevazione" => $frequenzaRilevazione
         ]);
+    }
+
+    // Insersce voce contabile (template)
+    public function inserisciVoceContabile($voceContabile, $usernameAmministratore, $descrizione): void {
+        $stmt = $this->pdo->prepare("CALL InserisciVoceContabile(:voceContabile, :usernameAmministratore, :descrizione");
+        $stmt->execute([":voceContabile" => $voceContabile, ":usernameAmministratore" => $usernameAmministratore, ":descrizione" => $descrizione]);
     }
 
     // Inserisce una nuova competenza per un revisore ESG 
