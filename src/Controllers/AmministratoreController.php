@@ -60,7 +60,31 @@ class AmministratoreController {
     }
 
     // Inserire voci contabili (template)
-    // ...
+    public function template() {
+        $errore = null;
+
+        if ($_SERVER["REQUEST_METHOD"] === "POST") {
+            $voceContabile = $_POST["voceContabile"] ?? "";
+            $usernameAmministratore = $_SESSION["username"];
+            $descrizione = $_POST["descrizione"] ?? "";
+
+            try {
+                $this->dbModel->inserisciVoceContabile($voceContabile, $usernameAmministratore, $descrizione);
+                header("Location: /amministratore/template");
+                exit;
+            }
+            catch (\PDOException $e) {
+                if ($e->getCode() === "45000") {
+                    $errore = $e->errorInfo[2];
+                }
+                else {
+                    $errore = "Errore durante la l'inserimento della voce contabile. Riprova.";
+                }
+            }
+        }
+
+        include BASE_PATH . "/Views/Amministratore/TemplateView.php";
+    }
 
     // Associare revisore ESG ad un bilancio aziendale
     // ...
