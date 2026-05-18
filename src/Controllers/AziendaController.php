@@ -3,7 +3,7 @@ namespace Controllers;
 
 class AziendaController {
     private $dbModel;
-
+ 
     public function __construct($dbModel){         
         $this->dbModel = $dbModel;     
     }
@@ -16,7 +16,7 @@ class AziendaController {
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_azienda'])) {                         
             
-            $usernameResponsabile = $_POST['username_responsabile'];             
+            $usernameResponsabile = $_SESSION['username'];             
             $ragioneSociale       = $_POST['ragione_sociale'];
             $nome                 = $_POST['nome_azienda'];
             $partitaIva           = $_POST['partita_iva'];
@@ -48,7 +48,17 @@ class AziendaController {
                     $data['messaggio_successo'] = "Azienda registrata con successo e associata al tuo profilo!";             
                 
                 } catch (\PDOException $e) {                 
-                    $data['messaggio_errore'] = "Errore dal Database: " . $e->getMessage();             
+                    if ($e->errorInfo[1] == 1062) {
+                        $msg = $e->getMessage();
+
+                        if (str_contains($msg, 'PartitaIVA')) {
+                            $data['messaggio_errore'] = "Partita IVA già esistente.";
+                        } elseif (str_contains($msg, 'PRIMARY')) {
+                            $data['messaggio_errore'] = "Azienda già registrata.";
+                        }
+                    } else {
+                        $data['messaggio_errore'] = "Errore dal Database: " . $e->getMessage();
+                    }
                 }
             }             
         }

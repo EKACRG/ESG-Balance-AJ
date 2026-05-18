@@ -20,12 +20,6 @@
     <form action="" method="POST" enctype="multipart/form-data">
         
         <fieldset>
-            <legend>Dati Responsabile</legend>
-            <label>Il tuo Username:</label><br>
-            <input type="text" name="username_responsabile" required><br><br>
-        </fieldset><br>
-
-        <fieldset>
             <legend>Dati Aziendali</legend>
             <label>Ragione Sociale:</label><br>
             <input type="text" name="ragione_sociale" placeholder="Es. Rossi & Co. S.p.A." required><br><br>

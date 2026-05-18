@@ -17,7 +17,7 @@ class BilancioController {
         ];
 
         // Simuliamo l'utente loggato (da sostituire con $_SESSION['username'])
-        $usernameResponsabile = "responsabile1"; 
+        $usernameResponsabile = $_SESSION['username']; 
         // Recuperiamo i dati dinamici per la View
         $data['aziende'] = $this->dbModel->getAziendeByResponsabile($usernameResponsabile);
         $data['voci_template'] = $this->dbModel->getVociTemplate();
@@ -37,7 +37,11 @@ class BilancioController {
                 }
                 $data['messaggio_successo'] = "Bilancio creato e popolato in stato di Bozza!";
             } catch (\PDOException $e) {
-                $data['messaggio_errore'] = "Errore dal Database: " . $e->getMessage();
+                if ($e->errorInfo[1] == 1062) {
+                    $data['messaggio_errore'] = "Esiste già un bilancio per questa azienda in questa data. Scegli una data diversa.";
+                } else {
+                    $data['messaggio_errore'] = "Errore dal Database: " . $e->getMessage();
+                }
             }
         }
         

@@ -17,7 +17,7 @@ class EsgController {
         ];
 
         // Simuliamo l'utente loggato (da sostituire con $_SESSION['username'])
-        $usernameResponsabile = "responsabile1"; 
+        $usernameResponsabile = $_SESSION['username'] ; 
 
         // Recuperiamo i dati per popolare i menu a tendina
         $data['indicatori'] = $this->dbModel->getIndicatoriESG();
@@ -40,7 +40,11 @@ class EsgController {
                 $this->dbModel->inserisciValoreESG($nomeIndicatore, $nomeVoce, $ragioneSociale, $dataCreazione, $valore, $fonte, $dataRilevazione);
                 $data['messaggio_successo'] = "Valore ESG associato con successo alla voce di bilancio!";                
             } catch (\PDOException $e) {
-                $data['messaggio_errore'] = "Errore DB: " . $e->getMessage();
+                if ($e->getCode() == 23000) {
+                    $data['messaggio_errore'] = "Questo indicatore ESG è già stato assegnato a questa voce.";
+                } else {
+                    $data['messaggio_errore'] = "Errore DB: " . $e->getMessage();
+                }
             }
         }
         
