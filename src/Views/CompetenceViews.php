@@ -18,9 +18,6 @@
 
     <form action ="" method="POST">
 
-        <label>Username Revisore:</label><br>
-        <input type="text" name="username_revisore" required><br><br>
-
         <label>Nome Competenza:</label><br>
         <input type="text" name="nome_competenza" placeholder="Es. Sostenibilità" required><br><br>
 

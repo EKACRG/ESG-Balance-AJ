@@ -13,7 +13,7 @@ class CompetenceController{
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_competenza'])) {
             
-            $username = $_POST['username_revisore'];
+            $username = $_SESSION["username"];
             $competenza = $_POST['nome_competenza'];
             $livello = $_POST['livello'];
 
