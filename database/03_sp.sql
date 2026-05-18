@@ -145,15 +145,15 @@ DROP PROCEDURE IF EXISTS InserimentoCompetenze;
 DELIMITER |
 CREATE PROCEDURE InserimentoCompetenze ( IN P_Username_Revisore VARCHAR(30), IN P_NomeCompetenza VARCHAR(100),IN P_Livello INT)
 BEGIN
-		IF p_Livello >= 0 AND p_Livello <= 5 THEN
+		-- Salva la competenza nella tabella principale (ignora se esiste già)
+		INSERT IGNORE INTO COMPETENZA (NomeCompetenza) VALUES (P_NomeCompetenza);
+        
         INSERT INTO POSSIEDE (Username_Revisore, NomeCompetenza, Livello)
         VALUES (P_Username_Revisore,P_NomeCompetenza,P_Livello);
-        ELSE
-			SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Errore: Il livello di competenza deve essere compreso tra 0 e 5';
-		END IF;
 END |
 DELIMITER ;
+
+
 -- Inserimento di note sulle singole voci di bilancio
 DROP PROCEDURE IF EXISTS InserimentoAnnotazione;
 DELIMITER |
