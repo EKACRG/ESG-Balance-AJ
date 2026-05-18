@@ -25,7 +25,11 @@ class CompetenceController{
                     $this->dbModel->inserisciCompetenza($username, $competenza, $livello);
                     $data['messaggio_successo'] = "Operazione completata: Competenza salvata con successo!";
                 } catch (\PDOException $e) {
-                    $data['messaggio_errore'] = "Errore dal Database: " . $e->getMessage();
+                    if ($e->getCode() == 23000) {
+                        $data['messaggio_errore'] = "⚠ Competenza già assegnata a questo revisore.";
+                    } else {
+                        $data['messaggio_errore'] = "Errore DB: " . $e->getMessage();
+                    }
                 }
             }
         }

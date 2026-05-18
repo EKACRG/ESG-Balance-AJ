@@ -20,14 +20,15 @@
         
         <fieldset>
             <legend>Identificativi della Revisione</legend>
-            <label>Il tuo Username (Revisore):</label><br>
-            <input type="text" name="username_revisore" required><br><br>
-
-            <label>Ragione Sociale dell'Azienda valutata:</label><br>
-            <input type="text" name="ragione_sociale" required><br><br>
-
-            <label>Data di Creazione del Bilancio:</label><br>
-            <input type="date" name="data_creazione" required><br><br>
+            <label>Bilancio da valutare:</label><br>
+            <select name="bilancio_selezionato" required>
+                <option value="">-- Scegli un bilancio --</option>
+                <?php foreach ($data['bilanci_assegnati'] as $bilancio): ?>
+                    <option value="<?= $bilancio['RAGIONESOCIALE'] . '|' . $bilancio['DATACREAZIONE'] ?>">
+                        <?= $bilancio['RAGIONESOCIALE'] ?> (<?= $bilancio['DATACREAZIONE'] ?>)
+                    </option>
+                <?php endforeach; ?>
+            </select><br><br>
         </fieldset><br>
 
         <fieldset>
