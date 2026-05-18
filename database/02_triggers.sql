@@ -90,5 +90,5 @@ BEGIN
         NumeroRevisioni = NumeroRevisioni + 1,
         IndiceAffidabilita = nuovo_indice          
     WHERE Username = NEW.Username_Revisore;
-END; |
+END |
 DELIMITER ;
