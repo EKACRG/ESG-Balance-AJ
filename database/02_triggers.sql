@@ -73,22 +73,28 @@ DELIMITER ;
 
 DELIMITER |
 CREATE TRIGGER AggiornaStatisticheRevisore
-AFTER INSERT ON VALUTA_GIUDIZIO
+AFTER UPDATE ON VALUTA_GIUDIZIO
 FOR EACH ROW
 BEGIN
     DECLARE nuovo_indice DECIMAL(5,2);
-    -- Calcolo la nuova affidabilità basata sullo storico
-    -- Percentuale di bilanci approvati (con o senza rilievi) rispetto al totale
-    SELECT 
-        (SUM(CASE WHEN ESITO IN ('approvazione', 'approvazione con rilievi') THEN 1 ELSE 0 END) / COUNT(*)) * 100
-    INTO nuovo_indice
-    FROM VALUTA_GIUDIZIO
-    WHERE Username_Revisore = NEW.Username_Revisore;
     
-    UPDATE REVISORE_ESG
-    SET 
-        NumeroRevisioni = NumeroRevisioni + 1,
-        IndiceAffidabilita = nuovo_indice          
-    WHERE Username = NEW.Username_Revisore;
+    -- Il trigger esegue i calcoli solo se l'Esito passa da NULL a un valore reale 
+    IF OLD.Esito IS NULL AND NEW.Esito IS NOT NULL THEN
+    
+		-- Calcolo la nuova affidabilità basata sullo storico
+		-- Percentuale di bilanci approvati (con o senza rilievi) rispetto al totale, con COUNT(ESito) ignoriamo i bilanci assegnati ma non ancora valutati
+		SELECT 
+			(SUM(CASE WHEN ESITO IN ('approvazione', 'approvazione con rilievi') THEN 1 ELSE 0 END) / COUNT(Esito)) * 100
+		INTO nuovo_indice
+		FROM VALUTA_GIUDIZIO
+		WHERE Username_Revisore = NEW.Username_Revisore;
+		
+        -- Aggiorniamo le statistiche del revisore nella sua tabella
+		UPDATE REVISORE_ESG
+		SET 
+			NumeroRevisioni = NumeroRevisioni + 1,
+			IndiceAffidabilita = nuovo_indice          
+		WHERE Username = NEW.Username_Revisore;
+	END IF;
 END |
 DELIMITER ;
