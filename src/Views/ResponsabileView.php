@@ -15,12 +15,21 @@
             Registra nuova azienda
         </a>
         
-        <a href="/Bilancio" class="btn">
-            Creazione e popolamento di un nuovo bilancio
-        </a>
+        <?php if ($haAziende): ?>
+            <a href="/Bilancio" class="btn">
+                Creazione e popolamento di un nuovo bilancio
+            </a>
+        <?php else: ?>
+            <a href="#" class="btn btn-disabled">
+                Creazione bilancio e popolamento di un nuovo bilancio - Non disponibile
+            </a>
+            <small style="color:red;">
+                * Registra prima almeno un'azienda
+            </small>
+        <?php endif; ?>
         
-        <!-- LOGICA IF PER IL TERZO BOTTONE -->
-        <?php if ($bottoneSbloccato): ?>
+        <!-- Logica IF per bottone Indicatore ESG -->
+        <?php if ($haBilanci): ?>
             <a href="/Esg" class="btn">
                 Inserimento valori degli indicatori ESG
             </a>
@@ -29,7 +38,7 @@
                 Inserimento valori degli indicatori ESG - Non disponibile
             </a>
             <!-- Aggiungiamo il messaggio ben visibile sotto il bottone -->
-            <small style="color: #d9534f; margin-top: -10px; font-weight: bold;">
+            <small style="color:red">
                 * Crea prima un bilancio per sbloccare questa funzione
             </small>
         <?php endif; ?>

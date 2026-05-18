@@ -14,7 +14,8 @@ class ResponsabileController {
         // Recuperiamo l'username dalla sessione. Usiamo ?? come "paracadute" se la sessione non fosse settata.
         $username = $_SESSION['username'] ?? 'Responsabile';
         
-        $bottoneSbloccato = $this->dbModel->haAlmenoUnBilancio($username);
+        $haAziende = $this->dbModel->haAlmenoUnAzienda($username);
+        $haBilanci = $this->dbModel->haAlmenoUnBilancio($username);
 
         include BASE_PATH . '/Views/ResponsabileView.php';
     }

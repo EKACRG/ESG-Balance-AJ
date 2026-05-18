@@ -314,6 +314,17 @@ class DatabaseModel {
         ]);
     }
 
+    // Controlla se il revisore ha almeno un azienda su cui creare un bilancio
+    public function haAlmenoUnAzienda(string $usernameResponsabile): bool {
+        $stmt = $this->pdo->prepare("
+            SELECT COUNT(*) 
+            FROM AZIENDA 
+            WHERE Username_Responsabile = ?
+        ");
+        $stmt->execute([$usernameResponsabile]);
+        return $stmt->fetchColumn() > 0;
+    }
+
     // Controlla se il revisore ha almeno un bilancio assegnato da valutare
     public function haBilanciDaValutare(string $usernameRevisore): bool {
         $stmt = $this->pdo->prepare("
