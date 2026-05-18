@@ -105,6 +105,7 @@ class DatabaseModel {
         elseif ($tipoUtente === "revisore") {
             $stmt = $this->pdo->prepare("CALL RegistraRevisore(:username)");
             $stmt->execute([":username" => $username]);
+            $model->testAssegnaRevisore("revisore1");
         } 
         elseif ($tipoUtente === "responsabile") {
             $stmt = $this->pdo->prepare("CALL RegistraResponsabile(:username, :curriculumVitae)");
@@ -324,6 +325,23 @@ class DatabaseModel {
         $conteggio = $stmt->fetchColumn();
         
         return $conteggio > 0;
+    }
+
+    // Estrae SOLO i bilanci assegnati a quello specifico revisore (legge dalla tabella VALUTA)
+    public function getBilanciRevisore(string $username) {
+        $stmt = $this->pdo->prepare("
+            SELECT RAGIONESOCIALE, DATACREAZIONE 
+            FROM VALUTA_GIUDIZIO 
+            WHERE Username_Revisore = ?
+        ");
+        $stmt->execute([$username]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    // Estrae tutte le Voci Contabili dal Template condiviso
+    public function getVociContabili() {
+        $stmt = $this->pdo->query("SELECT NomeVoceContabile FROM VOCE_CONTABILE");
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 }
 ?>

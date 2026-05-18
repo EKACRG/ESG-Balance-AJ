@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>O6 - Inserisci Nota a Bilancio</title>
+    <title>Inserisci Nota a Bilancio</title>
 </head>
 <body>
     <a href="/Revisore" class="btn-back">⬅ Torna alla Dashboard</a>
@@ -18,23 +18,33 @@
 
     <form action="" method="POST">
 
-        <!-- Dati del Revisore -->
-        <label>Username Revisore:</label><br>
-        <input type="text" name="username" required><br><br>
-
-        <!-- Identificazione del Bilancio (Chiavi esterne) -->
+        <!-- Identificazione del Bilancio-->
         <fieldset>
             <legend>Dati del Bilancio da revisionare</legend>
-            <label>Ragione Sociale Azienda:</label><br>
-            <input type="text" name="ragione_sociale" placeholder="Es. TechCorp S.p.A." required><br><br>
-
-            <label>Data Creazione Bilancio:</label><br>
-            <input type="date" name="data_creazione" required><br><br>
+             <div class="mb-3">
+                <label class="form-label">Seleziona il Bilancio:</label>
+                <select name="bilancio_selezionato" class="form-select" required>
+                    <option value="">-- Scegli un bilancio --</option>
+                    <?php foreach ($data['bilanci_assegnati'] as $bilancio): ?>
+                        <!-- Mostriamo all'utente Ragione Sociale e Data, passiamo al server la Ragione Sociale -->
+                        <option value="<?= $bilancio['RAGIONESOCIALE'] . '|' . $bilancio['DATACREAZIONE'] ?>">
+                            <?= $bilancio['RAGIONESOCIALE'] ?> (del <?= $bilancio['DATACREAZIONE'] ?>)
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
         </fieldset><br>
 
         <!-- Identificazione della Voce Contabile -->
-        <label>Nome Voce Contabile:</label><br>
-        <input type="text" name="nome_voce" placeholder="Es. Ricavi vendite" required><br><br>
+        <div class="mb-3">
+            <label class="form-label">Voce Contabile:</label>
+            <select name="nome_voce" class="form-select" required>
+                <option value="">-- Scegli la voce --</option>
+                <?php foreach ($data['voci_contabili'] as $voce): ?>
+                    <option value="<?= $voce['NomeVoceContabile'] ?>"><?= $voce['NomeVoceContabile'] ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
 
         <!-- Dati della Nota -->
         <fieldset>
