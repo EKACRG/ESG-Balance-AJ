@@ -11,18 +11,18 @@
     <p>Seleziona l'operazione che desideri effettuare:</p>
 
     <div class="dashboard-menu">
-        <a href="/Competence" class="btn">
+        <a href="/revisore/Competenze" class="btn">
             Inserisci Nuova Competenza
         </a>
         
         <!-- LOGICA IF PER LE VALUTAZIONI -->
         <?php if ($sbloccaValutazioni): ?>
             <!-- Se ha bilanci assegnati, bottoni blu cliccabili -->
-            <a href="/Note" class="btn">
+            <a href="/revisore/Note" class="btn">
                 Inserisci Nota su Voce di Bilancio
             </a>
             
-            <a href="/Giudizio" class="btn">
+            <a href="/revisore/Giudizio" class="btn">
                 Emetti Giudizio Complessivo
             </a>
         <?php else: ?>

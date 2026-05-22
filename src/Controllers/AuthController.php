@@ -31,6 +31,7 @@ class AuthController {
         $errore = null;
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
             $username = $_POST["username"] ?? "";
             $password = $_POST["password"] ?? "";
             $cf = $_POST["cf"] ?? "";
@@ -38,14 +39,33 @@ class AuthController {
             $luogoNascita = $_POST["luogoNascita"] ?? "";
             $email = $_POST["email"] ?? "";
             $tipoUtente = $_POST["tipoUtente"] ?? "";
-            $curriculumVitae = $_POST["curriculumVitae"] ?? null;
+
+            // METODO ALTERNATIVO FILE PDF
+            $curriculumVitaePath = "";
+
+            if (
+                isset($_FILES["curriculumVitae"]) &&
+                $_FILES["curriculumVitae"]["error"] === UPLOAD_ERR_OK
+            ) {
+                $curriculumVitaePath = "/uploads/curriculum/" . basename($_FILES["curriculumVitae"]["name"]);
+            }
 
             try {
-                $this->dbModel->signup($username, $password, $cf, $dataNascita, $luogoNascita, $email, $tipoUtente, $curriculumVitae);
+                $this->dbModel->signup(
+                    $username,
+                    $password,
+                    $cf,
+                    $dataNascita,
+                    $luogoNascita,
+                    $email,
+                    $tipoUtente,
+                    $curriculumVitaePath
+                );
+
                 header("Location: /auth/login");
                 exit;
-            }
-            catch (\PDOException $e) {
+
+            } catch (\PDOException $e) {
                 $errore = $e->errorInfo[2];
             }
         }

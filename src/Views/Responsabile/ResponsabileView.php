@@ -11,12 +11,12 @@
     <p>Seleziona l'operazione che desideri effettuare:</p>
 
     <div class="dashboard-menu">
-        <a href="/Azienda" class="btn">
+        <a href="/responsabile/azienda" class="btn">
             Registra nuova azienda
         </a>
         
         <?php if ($haAziende): ?>
-            <a href="/Bilancio" class="btn">
+            <a href="/responsabile/Bilancio" class="btn">
                 Creazione e popolamento di un nuovo bilancio
             </a>
         <?php else: ?>
@@ -30,7 +30,7 @@
         
         <!-- Logica IF per bottone Indicatore ESG -->
         <?php if ($haBilanci): ?>
-            <a href="/Esg" class="btn">
+            <a href="/responsabile/Esg" class="btn">
                 Inserimento valori degli indicatori ESG
             </a>
         <?php else: ?>
