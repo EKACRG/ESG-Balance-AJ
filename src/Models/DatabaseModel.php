@@ -106,7 +106,14 @@ class DatabaseModel {
             $stmt = $this->pdo->prepare("CALL RegistraRevisore(:username)");
             $stmt->execute([":username" => $username]);
         } 
+        // SOLUZIONE ALTERNATIVA PDF
         elseif ($tipoUtente === "responsabile") {
+
+            // FIX: mai NULL → stringa vuota o default
+            if ($curriculumVitae === null || $curriculumVitae === "") {
+                $curriculumVitae = ""; // oppure "nessun_file.pdf"
+            }
+
             $stmt = $this->pdo->prepare("CALL RegistraResponsabile(:username, :curriculumVitae)");
             $stmt->execute([
                 ":username" => $username,
