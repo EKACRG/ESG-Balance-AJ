@@ -141,7 +141,7 @@ class DatabaseModel {
         return "responsabile";
     }
 
-    // METODI PER UTENTE RESPONSABILE
+    // -- METODI PER UTENTE RESPONSABILE --
 
     // METODI PER AZIENDA
 
@@ -253,9 +253,9 @@ class DatabaseModel {
         return $conteggio > 0;
     }
 
-    // METODI PER UTENTE REVISORE
+    // -- METODI PER UTENTE REVISORE --
 
-     // Inserisce una nuova competenza per un revisore ESG 
+    // Inserisce una nuova competenza per un revisore ESG 
     public function inserisciCompetenza(
         string $usernameRevisore, 
         string $competenza, 
