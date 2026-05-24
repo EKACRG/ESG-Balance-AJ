@@ -29,6 +29,9 @@
             <label>Email:</label>
             <input type="email" name="email" required>
 
+            <button type="button" id="aggiungiEmail">Aggiungi email</button>
+            <div id="emailAggiuntive"></div>
+
             <label>Tipo utente:</label>
             <select name="tipoUtente" id="tipoUtente">
                 <option value="amministratore">Amministratore</option>
@@ -50,11 +53,19 @@
         <script>
             const tipoUtente = document.getElementById("tipoUtente");
             const cv = document.getElementById("cv");
+            const aggiungiEmail = document.getElementById("aggiungiEmail");
 
             tipoUtente.addEventListener("change", function() {
                 cv.style.display = this.value === "responsabile" ? "block" : "none";
             });
 
+            aggiungiEmail.addEventListener("click", function() {
+                const emailAggiuntive = document.getElementById("emailAggiuntive");
+                const input = document.createElement("input");
+                input.type = "email";
+                input.name = "emailAggiuntive[]";
+                emailAggiuntive.appendChild(input);
+            })
         </script>
     </body>
 </html>

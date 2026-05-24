@@ -16,7 +16,8 @@ class AuthController {
             $password = $_POST["password"] ?? "";
 
             if ($this->dbModel->login($username, $password)) {
-                header("Location: /stats/index");
+                $tipoUtente = $_SESSION["tipo_utente"];
+                header("Location: /" . $tipoUtente . "/index");
                 exit;
             }
             else {
@@ -24,7 +25,7 @@ class AuthController {
             }
         }
 
-        include __DIR__ . "/../Views/LoginView.php";
+        include __DIR__ . "/../Views/Autenticazione/LoginView.php";
     }
 
     public function signup() {
@@ -70,7 +71,7 @@ class AuthController {
             }
         }
 
-        include __DIR__ . "/../Views/SignupView.php";
+        include __DIR__ . "/../Views/Autenticazione/SignupView.php";
     }
 
     public function logout() {

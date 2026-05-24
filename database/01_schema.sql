@@ -1,5 +1,24 @@
 USE esgbalance;
 
+SET FOREIGN_KEY_CHECKS = 0;
+
+TRUNCATE TABLE MEMORIZZA;
+TRUNCATE TABLE ANNOTAZIONE;
+TRUNCATE TABLE VOCE_BILANCIO;
+TRUNCATE TABLE VALUTA_GIUDIZIO;
+TRUNCATE TABLE BILANCIO;
+TRUNCATE TABLE AZIENDA;
+TRUNCATE TABLE POSSIEDE;
+TRUNCATE TABLE EMAIL;
+TRUNCATE TABLE INDICATORE_ESG;
+TRUNCATE TABLE VOCE_CONTABILE;
+TRUNCATE TABLE RESPONSABILE_AZIENDALE;
+TRUNCATE TABLE REVISORE_ESG;
+TRUNCATE TABLE AMMINISTRATORE;
+TRUNCATE TABLE COMPETENZA;
+TRUNCATE TABLE UTENTI;
+
+SET FOREIGN_KEY_CHECKS = 1;
 -- Creazione delle tabelle
 
 CREATE TABLE IF NOT EXISTS UTENTI (
@@ -134,67 +153,54 @@ CREATE TABLE IF NOT EXISTS MEMORIZZA (
     FOREIGN KEY (NomeVoceBilancio, RagioneSociale, DataCreazione) REFERENCES VOCE_BILANCIO(NomeVoceBilancio, RagioneSociale, DataCreazione) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
--- Popolamento per test
+INSERT INTO UTENTI (Username, Password, CF, DataNascita, LuogoNascita)
+VALUES ('resp1', 'pass123', 'RSSMRA80A01H501X', '1985-05-10', 'Milano');
 
-INSERT IGNORE INTO  UTENTI (Username, Password, CF, DataNascita, LuogoNascita) VALUES
-('amministratore', 'pass123', 'CFADMIN001234567', '1980-01-01', 'Roma'),
-('revisore1', 'pass123', 'CFREV00001234567', '1985-05-05', 'Milano'),
-('revisore2', 'pass123', 'CFREV00002234567', '1990-10-10', 'Torino'),
-('responsabile1', 'pass123', 'CFRESP0001234567', '1975-03-03', 'Napoli');
+INSERT INTO RESPONSABILE_AZIENDALE (Username, CurriculumVitae)
+VALUES ('resp1', 'CV esempio');
 
-INSERT IGNORE INTO AMMINISTRATORE (Username) VALUES ('amministratore');
+INSERT INTO AZIENDA (RagioneSociale, Nome, PartitaIVA, Settore, NumDipendenti, Logo, NumBilanci, Username_Responsabile)
+VALUES ('ESG SRL', 'ESG', '12345678901', 'Finanza', 50, NULL, 0, 'resp1');
 
-INSERT IGNORE INTO REVISORE_ESG (Username, NumeroRevisioni, IndiceAffidabilita) VALUES 
-('revisore1', 0, 0.00), 
-('revisore2', 0, 0.00);
+INSERT INTO BILANCIO (RagioneSociale, DataCreazione, Stato)
+VALUES ('ESG SRL', '2026-01-01', 'In revisione');
 
-INSERT IGNORE INTO RESPONSABILE_AZIENDALE (Username, CurriculumVitae) VALUES ('responsabile1', 'cv_mario.pdf');
+INSERT INTO UTENTI (Username, Password, CF, DataNascita, LuogoNascita)
+VALUES ('revisore1', 'pass123', 'RSSMRA80A01H501Y', '1990-01-01', 'Roma');
 
-INSERT IGNORE INTO EMAIL (Username, IndirizzoEmail) VALUES
-('amministratore', 'admin@example.com'),
-('revisore1', 'revisore1@example.com'),
-('revisore2', 'revisore2@example.com'),
-('responsabile1', 'resp1@example.com');
+INSERT INTO REVISORE_ESG (Username, NumeroRevisioni, IndiceAffidabilita)
+VALUES ('revisore1', 0, 0.00);
 
-INSERT IGNORE INTO VOCE_CONTABILE (NomeVoceContabile, Username_Amministratore, Descrizione) VALUES
-('Ricavi Vendite', 'amministratore' ,'Totale dei ricavi derivanti dalla vendita di prodotti e servizi'),
-('Costo del Personale', 'amministratore' , 'Costi sostenuti per stipendi e contributi dei dipendenti'),
-('Consumi Energetici', 'amministratore' ,'Costi sostenuti per l energia elettrica');
+CALL AssociaRevisore('revisore1', 'ESG SRL', '2026-01-01');
 
-INSERT IGNORE INTO INDICATORE_ESG (NomeIndicatore, Username_Amministratore, Immagine, Rilevanza, TipoIndicatore, CodiceNormativa, AmbitoSociale, FrequenzaRilevazione) VALUES
-('Energia Rinnovabile', 'amministratore' , 'energia.png', 9, 'A', 'ISO50001', NULL, NULL),
-('Ore Formazione', 'amministratore' , 'formazione.png',7, 'B', NULL, 'Dipendenti', 'Annuale');
+SELECT * FROM VALUTA_GIUDIZIO;
 
-INSERT IGNORE  INTO AZIENDA (RagioneSociale, Nome, PartitaIVA, Settore, NumDipendenti, Logo, NumBilanci, Username_Responsabile) VALUES
-('Apple Italia SRL', 'Apple', '12345678901', 'Tecnologia', 500, 'apple_logo.png', 0, 'responsabile1'),
-('Barilla SPA', 'Barilla', '10987654321', 'Alimentare', 1200, 'barilla_logo.png', 0, 'responsabile1');
+-- Creazione amministratore per il template contabile
+INSERT INTO UTENTI (Username, Password, CF, DataNascita, LuogoNascita)
+VALUES ('admin1', 'pass123', 'RSSMRA80A01H501Z', '1980-01-01', 'Napoli');
 
-INSERT IGNORE INTO BILANCIO (RagioneSociale, DataCreazione, Stato) VALUES
-('Apple Italia SRL', '2025-12-31', 'approvato'),
-('Apple Italia SRL', '2024-12-31', 'approvato'),
-('Barilla SPA', '2025-12-31', 'bozza');
+INSERT INTO AMMINISTRATORE (Username)
+VALUES ('admin1');
 
-INSERT IGNORE INTO COMPETENZA (NomeCompetenza) VALUES
-('Revisione Contabile'),
-('Controllo Qualità');
+-- Creazione voce contabile del template
+INSERT INTO VOCE_CONTABILE (
+    NomeVoceContabile,
+    Username_Amministratore,
+    Descrizione
+)
+VALUES (
+    'Ricavi',
+    'admin1',
+    'Ricavi annuali aziendali'
+);
 
-INSERT IGNORE INTO POSSIEDE (Username_Revisore, NomeCompetenza, Livello) VALUES
-('revisore1', 'Revisione Contabile', 5),
-('revisore2', 'Controllo Qualità', 4);
+-- Popolamento della voce nel bilancio
+CALL PopolaVoceBilancio(
+    'Ricavi',
+    'ESG SRL',
+    '2026-01-01',
+    150000.00
+);
 
-INSERT IGNORE INTO VOCE_BILANCIO (NomeVoceBilancio, RagioneSociale, DataCreazione, ValoreNumerico) VALUES
-('Ricavi Vendite', 'Apple Italia SRL', '2025-12-31', 5000000.00),
-('Costo del Personale', 'Apple Italia SRL', '2025-12-31', 1500000.00),
-('Consumi Energetici', 'Apple Italia SRL', '2025-12-31', 200000.00);
-
-INSERT IGNORE INTO VALUTA_GIUDIZIO (Username_Revisore, RagioneSociale, DataCreazione, Esito, CampoRilievi, Data) VALUES
-('revisore1', 'Apple Italia SRL', '2025-12-31', 'approvazione', 'Ottima gestione sostenibile', '2026-01-15'),
-('revisore2', 'Apple Italia SRL', '2024-12-31', 'approvazione con rilievi', 'Mancano alcuni dati minori', '2025-01-20');
-
-INSERT IGNORE INTO ANNOTAZIONE (Username_Revisore, NomeVoceBilancio, RagioneSociale, DataCreazione, Data, Testo) VALUES
-('revisore1', 'Consumi Energetici', 'Apple Italia SRL', '2025-12-31', '2026-01-10', 'Verificare le fatture del mese di Novembre per i consumi.'),
-('revisore1', 'Costo del Personale', 'Apple Italia SRL', '2025-12-31', '2026-01-12', 'I costi dei benefit aziendali sono stati calcolati correttamente.');
-
-INSERT IGNORE INTO MEMORIZZA (NomeIndicatore, NomeVoceBilancio, RagioneSociale, DataCreazione, Valore, Fonte, Data) VALUES
-('Energia Rinnovabile', 'Consumi Energetici', 'Apple Italia SRL', '2025-12-31', 85.5, 'Bolletta Enel', '2025-12-31'),
-('Ore Formazione', 'Costo del Personale', 'Apple Italia SRL', '2025-12-31', 120.0, 'Registro HR', '2025-12-31');
+-- Verifica
+SELECT * FROM UTENTI;
