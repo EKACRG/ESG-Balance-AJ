@@ -26,12 +26,17 @@ class AmministratoreController {
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $indicatore = $_POST["indicatore"] ?? "";
             $usernameAmministratore = $_SESSION["username"];
-            $immagine = $_POST["immagine"] ?? "";
             $rilevanza = $_POST["rilevanza"] ?? 0;
             $tipoIndicatore = $_POST["tipoIndicatore"] ?? "";
             $codiceNormativa = $_POST["codiceNormativa"] ?? null;
             $ambitoSociale = $_POST["ambitoSociale"] ?? null;
             $frequenzaRilevazione = $_POST["frequenzaRilevazione"] ?? null;
+
+            $immagine = "";
+            if (isset($_FILES["immagine"]) && $_FILES["immagine"]["error"] === UPLOAD_ERR_OK) {
+                $immagine = "/uploads/" . basename($_FILES["immagine"]["name"]);
+                move_uploaded_file($_FILES["immagine"]["tmp_name"], BASE_PATH . $immagine);
+            }
 
             try {
                 $this->dbModel->inserisciIndicatoriESG(

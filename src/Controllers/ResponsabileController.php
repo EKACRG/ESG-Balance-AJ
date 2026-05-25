@@ -39,15 +39,15 @@ class ResponsabileController {
             $settore = $_POST['settore'];
             $numDipendenti = $_POST['num_dipendenti'];
 
-            $logo = $_FILES['logo'];
+            $logoPath = "";
             $tipi_consentiti = ['image/jpeg', 'image/png', 'image/gif'];
-
-            if ($logo['error'] !== UPLOAD_ERR_OK || !in_array($logo['type'], $tipi_consentiti)) {
+            if (!isset($_FILES["logo"]) || $_FILES["logo"]["error"] !== UPLOAD_ERR_OK || !in_array($_FILES["logo"]["type"], $tipi_consentiti)) {
                 $data['messaggio_errore'] = "Logo non valido.";
             } else {
-                try {
-                    $logoPath = "/uploads/loghi/" . basename($logo['name']);
+                $logoPath = "/uploads/" . basename($_FILES["logo"]["name"]);
+                move_uploaded_file($_FILES["logo"]["tmp_name"], BASE_PATH . $logoPath);
 
+                try {
                     $this->dbModel->registraAzienda(
                         $usernameResponsabile,
                         $ragioneSociale,
