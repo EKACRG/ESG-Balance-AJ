@@ -1,7 +1,7 @@
 <?php 
 namespace Controllers;
 
-class AuthController {
+class AutenticazioneController {
     private $dbModel;
 
     public function __construct($dbModel) {
