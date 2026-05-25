@@ -42,12 +42,15 @@ class AutenticazioneController {
             $emailAggiuntive = $_POST["emailAggiuntive"] ?? [];
             
             $curriculumVitaePath = "";
-            if (isset($_FILES["curriculumVitae"]) && $_FILES["curriculumVitae"]["error"] === UPLOAD_ERR_OK) {
-                $curriculumVitaePath = "/uploads/" . basename($_FILES["curriculumVitae"]["name"]);
-                move_uploaded_file($_FILES["curriculumVitae"]["tmp_name"], BASE_PATH . $curriculumVitaePath);
+            if ($tipoUtente === "responsabile" && isset($_FILES["curriculumVitae"]) && $_FILES["curriculumVitae"]["error"] === UPLOAD_ERR_OK) {
+                if ($_FILES["curriculumVitae"]["type"] !== "application/pdf") {
+                    $errore = "Il curriculum deve essere un file PDF.";
+                } else {
+                    $curriculumVitaePath = "/uploads/" . time() . "_" . basename($_FILES["curriculumVitae"]["name"]);
+                }
             }
 
-            try {
+            if ($errore === null) try {
                 $this->dbModel->signup(
                     $username,
                     $password,
@@ -60,9 +63,12 @@ class AutenticazioneController {
                     $emailAggiuntive
                 );
 
+                if ($curriculumVitaePath !== "") {
+                    move_uploaded_file($_FILES["curriculumVitae"]["tmp_name"], BASE_PATH . $curriculumVitaePath);
+                }
+
                 header("Location: /autenticazione/login");
                 exit;
-
             } catch (\PDOException $e) {
                 $errore = $e->errorInfo[2];
             }

@@ -33,12 +33,16 @@ class AmministratoreController {
             $frequenzaRilevazione = $_POST["frequenzaRilevazione"] ?? null;
 
             $immagine = "";
+            $tipi_consentiti = ['image/jpeg', 'image/png', 'image/gif'];
             if (isset($_FILES["immagine"]) && $_FILES["immagine"]["error"] === UPLOAD_ERR_OK) {
-                $immagine = "/uploads/" . basename($_FILES["immagine"]["name"]);
-                move_uploaded_file($_FILES["immagine"]["tmp_name"], BASE_PATH . $immagine);
+                if (!in_array($_FILES["immagine"]["type"], $tipi_consentiti)) {
+                    $errore = "Tipo immagine non consentito.";
+                } else {
+                    $immagine = "/uploads/" . time() . "_" . basename($_FILES["immagine"]["name"]);
+                }
             }
 
-            try {
+            if ($errore === null) try {
                 $this->dbModel->inserisciIndicatoriESG(
                     $indicatore,
                     $usernameAmministratore,
@@ -49,6 +53,11 @@ class AmministratoreController {
                     $ambitoSociale,
                     $frequenzaRilevazione
                 );
+
+                if ($immagine !== "") {
+                    move_uploaded_file($_FILES["immagine"]["tmp_name"], BASE_PATH . $immagine);
+                }
+
                 header("Location: /amministratore/indicatoriESG");
                 exit();
             } catch (\PDOException $e) {

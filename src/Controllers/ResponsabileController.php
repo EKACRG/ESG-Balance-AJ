@@ -44,8 +44,7 @@ class ResponsabileController {
             if (!isset($_FILES["logo"]) || $_FILES["logo"]["error"] !== UPLOAD_ERR_OK || !in_array($_FILES["logo"]["type"], $tipi_consentiti)) {
                 $data['messaggio_errore'] = "Logo non valido.";
             } else {
-                $logoPath = "/uploads/" . basename($_FILES["logo"]["name"]);
-                move_uploaded_file($_FILES["logo"]["tmp_name"], BASE_PATH . $logoPath);
+                $logoPath = "/uploads/" . time() . "_" . basename($_FILES["logo"]["name"]);
 
                 try {
                     $this->dbModel->registraAzienda(
@@ -57,6 +56,10 @@ class ResponsabileController {
                         $numDipendenti,
                         $logoPath
                     );
+
+                    if ($logoPath !== "") {
+                        move_uploaded_file($_FILES["logo"]["tmp_name"], BASE_PATH . $logoPath);
+                    }
 
                     $data['messaggio_successo'] = "Azienda registrata!";
                 } catch (\PDOException $e) {

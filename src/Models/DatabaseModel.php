@@ -82,7 +82,7 @@ class DatabaseModel {
         string $luogoNascita,
         string $email,
         string $tipoUtente,
-        ?string $curriculumVitae = null,
+        string $curriculumVitae = "",
         array $emailAggiuntive = []
     ): bool {
         // Per non salvare la password in chiaro
@@ -107,14 +107,7 @@ class DatabaseModel {
             $stmt = $this->pdo->prepare("CALL RegistraRevisore(:username)");
             $stmt->execute([":username" => $username]);
         } 
-        // SOLUZIONE ALTERNATIVA PDF
         elseif ($tipoUtente === "responsabile") {
-
-            // FIX: mai NULL → stringa vuota o default
-            if ($curriculumVitae === null || $curriculumVitae === "") {
-                $curriculumVitae = ""; // oppure "nessun_file.pdf"
-            }
-
             $stmt = $this->pdo->prepare("CALL RegistraResponsabile(:username, :curriculumVitae)");
             $stmt->execute([
                 ":username" => $username,
