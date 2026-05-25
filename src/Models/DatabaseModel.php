@@ -403,7 +403,7 @@ class DatabaseModel {
     // Estrae SOLO i bilanci assegnati a quello specifico revisore
     public function getBilanciRevisore(string $username) {
         $stmt = $this->pdo->prepare("
-            SELECT RAGIONESOCIALE, DATACREAZIONE 
+            SELECT RagioneSociale, DataCreazione 
             FROM VALUTA_GIUDIZIO 
             WHERE Username_Revisore = ?
             AND Esito IS NULL
