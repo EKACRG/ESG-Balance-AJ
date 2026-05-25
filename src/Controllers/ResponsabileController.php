@@ -9,7 +9,7 @@ class ResponsabileController {
 
         // Controllo utente loggato e tipo utente
         if (!$this->dbModel->isLoggedIn() || $_SESSION["tipo_utente"] !== "responsabile") {
-            header("Location: /auth/login");
+            header("Location: /autenticazione/login");
             exit;
         }
     }

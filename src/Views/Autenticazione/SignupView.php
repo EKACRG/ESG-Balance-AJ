@@ -10,7 +10,7 @@
             <p style="color: red;"><?= $errore ?></p>
         <?php endif; ?>
 
-        <form method="POST" action="/auth/signup" enctype="multipart/form-data">
+        <form method="POST" action="/autenticazione/signup" enctype="multipart/form-data">
             <label>Username:</label>
             <input type="text" name="username" required>
 
@@ -48,7 +48,7 @@
             <button type="submit">Registrati</button>
         </form>
 
-        <p>Hai già un account? <a href="/auth/login">Accedi</a></p>
+        <p>Hai già un account? <a href="/autenticazione/login">Accedi</a></p>
 
         <script>
             const tipoUtente = document.getElementById("tipoUtente");

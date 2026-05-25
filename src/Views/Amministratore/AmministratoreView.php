@@ -15,6 +15,6 @@
         <hr>
 
         <a href="/stats/index">Visualizza Statistiche</a>
-        <a href="/auth/logout">Logout</a>
+        <a href="/autenticazione/logout">Logout</a>
     </body>
 </html>

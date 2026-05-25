@@ -9,7 +9,7 @@ class RevisoreController {
                 
         // Controllo utente loggato e tipo utente
         if (!$this->dbModel->isLoggedIn() || $_SESSION["tipo_utente"] !== "revisore") {
-            header("Location: /auth/login");
+            header("Location: /autenticazione/login");
             exit;
         }
     }

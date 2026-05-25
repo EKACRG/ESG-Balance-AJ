@@ -10,7 +10,7 @@
             <p style="color: red;"><?= $errore ?></p>
         <?php endif; ?>
 
-        <form method="POST" action="/auth/login">
+        <form method="POST" action="/autenticazione/login">
             <label>Username:</label>
             <input type="text" name="username" required>
 
@@ -20,6 +20,6 @@
             <button type="submit">Accedi</button>
         </form>
 
-        <p>Non hai un account? <a href="/auth/signup">Registrati</a></p>
+        <p>Non hai un account? <a href="/autenticazione/signup">Registrati</a></p>
     </body>
 </html>

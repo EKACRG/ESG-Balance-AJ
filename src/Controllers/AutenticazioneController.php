@@ -63,7 +63,7 @@ class AutenticazioneController {
                     $curriculumVitaePath
                 );
 
-                header("Location: /auth/login");
+                header("Location: /autenticazione/login");
                 exit;
 
             } catch (\PDOException $e) {
@@ -76,7 +76,7 @@ class AutenticazioneController {
 
     public function logout() {
         $this->dbModel->logout();
-        header("Location: /auth/login");
+        header("Location: /autenticazione/login");
         exit;
     }
 }

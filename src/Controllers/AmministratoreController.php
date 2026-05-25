@@ -9,7 +9,7 @@ class AmministratoreController {
 
         // Controllo utente loggato e tipo utente
         if (!$this->dbModel->isLoggedIn() || $_SESSION["tipo_utente"] !== "amministratore") {
-            header("Location: /auth/login");
+            header("Location: /autenticazione/login");
             exit;
         }
     }
