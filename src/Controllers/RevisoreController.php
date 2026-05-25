@@ -6,18 +6,12 @@ class RevisoreController {
 
     public function __construct($dbModel){
         $this->dbModel = $dbModel;
-        
-        // DA SISTEMARE 
-        /* 
+                
         // Controllo utente loggato e tipo utente
-        if (
-            !$this->dbModel->isLoggedIn() || 
-            $_SESSION["tipo_utente"] !== "revisore"
-        ) {
+        if (!$this->dbModel->isLoggedIn() || $_SESSION["tipo_utente"] !== "revisore") {
             header("Location: /auth/login");
             exit;
         }
-*/
     }
     // Dashboard revisore
     public function index() {

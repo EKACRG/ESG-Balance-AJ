@@ -7,18 +7,12 @@ class ResponsabileController {
     public function __construct($dbModel){
         $this->dbModel = $dbModel;
 
-        // DA SISTEMARE 
-        /* 
-        if (
-            !$this->dbModel->isLoggedIn() ||
-            $_SESSION["tipo_utente"] !== "responsabile"
-        ) {
+        // Controllo utente loggato e tipo utente
+        if (!$this->dbModel->isLoggedIn() || $_SESSION["tipo_utente"] !== "responsabile") {
             header("Location: /auth/login");
             exit;
         }
-            */
     }
-
 
     public function index() {
         $username = $_SESSION['username'];
