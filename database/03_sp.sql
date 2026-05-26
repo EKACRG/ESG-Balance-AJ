@@ -178,9 +178,9 @@ DELIMITER ;
 
 
 -- Inserimento di note sulle singole voci di bilancio
-DROP PROCEDURE IF EXISTS InserimentoAnnotazione;
+DROP PROCEDURE IF EXISTS InserisciAnnotazione;
 DELIMITER |
-CREATE PROCEDURE InserimentoAnnotazione (IN  P_Username_Revisore VARCHAR(30), IN P_NomeVoceBilancio VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE, IN P_Data DATE, IN P_Testo TEXT)
+CREATE PROCEDURE InserisciAnnotazione (IN  P_Username_Revisore VARCHAR(30), IN P_NomeVoceBilancio VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE, IN P_Data DATE, IN P_Testo TEXT)
 BEGIN
         INSERT INTO ANNOTAZIONE (Username_Revisore, NomeVoceBilancio, RagioneSociale, DataCreazione, Data, Testo)
         VALUES (P_Username_Revisore,P_NomeVoceBilancio,P_RagioneSociale, P_DataCreazione, P_Data,P_Testo);
@@ -188,9 +188,9 @@ END |
 DELIMITER ;
 
 -- Inserimento del giudizio complessivo
-DROP PROCEDURE IF EXISTS InserimentoGiudizio;
+DROP PROCEDURE IF EXISTS InserisciGiudizio;
 DELIMITER |
-CREATE PROCEDURE InserimentoGiudizio (IN  P_Username_Revisore VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE, IN P_Esito VARCHAR(30), IN P_CampoRilievi TEXT, IN P_Data DATE)
+CREATE PROCEDURE InserisciGiudizio (IN  P_Username_Revisore VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE, IN P_Esito VARCHAR(30), IN P_CampoRilievi TEXT, IN P_Data DATE)
 BEGIN
 		IF P_Esito IN ('approvazione', 'approvazione con rilievi', 'respingimento') THEN
 			UPDATE VALUTA_GIUDIZIO 

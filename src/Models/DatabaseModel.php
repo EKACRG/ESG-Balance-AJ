@@ -331,7 +331,7 @@ class DatabaseModel {
     ): void {
         
         // Prepariamo la chiamata alla Stored Procedure MySQL con 6 parametri
-        $stmt = $this->pdo->prepare("CALL InserimentoAnnotazione(?, ?, ?, ?, ?, ?)");
+        $stmt = $this->pdo->prepare("CALL InserisciAnnotazione(?, ?, ?, ?, ?, ?)");
         
         // Eseguiamo la query passando l'array con le 6 variabili esattamente nell'ordine previsto
         $stmt->execute([
@@ -356,7 +356,7 @@ class DatabaseModel {
     ): void {
 
         // Prepariamo la chiamata alla Stored Procedure MySQL con 6 parametri
-        $stmt = $this->pdo->prepare("CALL InserimentoGiudizio(?, ?, ?, ?, ?, ?)");
+        $stmt = $this->pdo->prepare("CALL InserisciGiudizio(?, ?, ?, ?, ?, ?)");
         
         // Eseguiamo la query passando l'array con le 6 variabili esattamente nell'ordine previsto
         $stmt->execute([
