@@ -8,12 +8,12 @@
     <a href="/Revisore" class="btn-back">⬅ Torna alla Dashboard</a>
     <h2>Aggiungi una nota su una voce di bilancio</h2>
 
-    <?php if (!empty($data['messaggio_successo'])): ?>
-        <h3 style="color: green;"><?= $data['messaggio_successo'] ?></h3>
+    <?php if (!empty($messaggio_successo)): ?>
+        <h3 style="color: green;"><?= $messaggio_successo ?></h3>
     <?php endif; ?>
 
-    <?php if (!empty($data['messaggio_errore'])): ?>
-        <h3 style="color: red;"><?= $data['messaggio_errore'] ?></h3>
+    <?php if (!empty($messaggio_errore)): ?>
+        <h3 style="color: red;"><?= $messaggio_errore ?></h3>
     <?php endif; ?>
 
     <form action="" method="POST">
@@ -25,7 +25,7 @@
                 <label class="form-label">Seleziona il Bilancio:</label>
                 <select name="bilancio_selezionato" class="form-select" required>
                     <option value="">-- Scegli un bilancio --</option>
-                    <?php foreach ($data['bilanci_assegnati'] as $bilancio): ?>
+                    <?php foreach ($bilanci_assegnati as $bilancio): ?>
                         <!-- Mostriamo all'utente Ragione Sociale e Data, passiamo al server la Ragione Sociale -->
                         <option value="<?= $bilancio['RAGIONESOCIALE'] . '|' . $bilancio['DATACREAZIONE'] ?>">
                             <?= $bilancio['RAGIONESOCIALE'] ?> (del <?= $bilancio['DATACREAZIONE'] ?>)
@@ -40,7 +40,7 @@
             <label class="form-label">Voce Contabile:</label>
             <select name="nome_voce" class="form-select" required>
                 <option value="">-- Scegli la voce --</option>
-                <?php foreach ($data['voci_contabili'] as $voce): ?>
+                <?php foreach ($voci_contabili as $voce): ?>
                     <option value="<?= $voce['NomeVoceContabile'] ?>"><?= $voce['NomeVoceContabile'] ?></option>
                 <?php endforeach; ?>
             </select>

@@ -9,7 +9,7 @@ class AutenticazioneController {
     }
 
     public function login() {
-        $errore = null;
+        $messaggio_errore = null;
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $username = $_POST["username"] ?? "";
@@ -21,7 +21,7 @@ class AutenticazioneController {
                 exit;
             }
             else {
-                $errore = "Username o password errati";
+                $messaggio_errore = "Username o password errati";
             }
         }
 
@@ -29,7 +29,7 @@ class AutenticazioneController {
     }
 
     public function signup() {
-        $errore = null;
+        $messaggio_errore = null;
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $username = $_POST["username"] ?? "";
@@ -44,13 +44,13 @@ class AutenticazioneController {
             $curriculumVitaePath = "";
             if ($tipoUtente === "responsabile" && isset($_FILES["curriculumVitae"]) && $_FILES["curriculumVitae"]["error"] === UPLOAD_ERR_OK) {
                 if ($_FILES["curriculumVitae"]["type"] !== "application/pdf") {
-                    $errore = "Il curriculum deve essere un file PDF.";
+                    $messaggio_errore = "Il curriculum deve essere un file PDF.";
                 } else {
                     $curriculumVitaePath = "/uploads/" . time() . "_" . basename($_FILES["curriculumVitae"]["name"]);
                 }
             }
 
-            if ($errore === null) try {
+            if ($messaggio_errore === null) try {
                 $this->dbModel->signup(
                     $username,
                     $password,
@@ -70,7 +70,12 @@ class AutenticazioneController {
                 header("Location: /autenticazione/login");
                 exit;
             } catch (\PDOException $e) {
-                $errore = $e->errorInfo[2];
+                if ($e->getCode() === "45000") {
+                    $messaggio_errore = $e->errorInfo[2];
+                } else {
+                    error_log($e->getMessage());
+                    $messaggio_errore = "Errore durante la registrazione. Riprova.";
+                }
             }
         }
 

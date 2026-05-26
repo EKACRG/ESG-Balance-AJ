@@ -21,7 +21,7 @@ class AmministratoreController {
 
     // Inserimento indicatori ESG
     public function indicatoriESG() {
-        $errore = null;
+        $messaggio_errore = null;
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $indicatore = $_POST["indicatore"] ?? "";
@@ -36,13 +36,13 @@ class AmministratoreController {
             $tipi_consentiti = ['image/jpeg', 'image/png', 'image/gif'];
             if (isset($_FILES["immagine"]) && $_FILES["immagine"]["error"] === UPLOAD_ERR_OK) {
                 if (!in_array($_FILES["immagine"]["type"], $tipi_consentiti)) {
-                    $errore = "Tipo immagine non consentito.";
+                    $messaggio_errore = "Tipo immagine non consentito.";
                 } else {
                     $immagine = "/uploads/" . time() . "_" . basename($_FILES["immagine"]["name"]);
                 }
             }
 
-            if ($errore === null) try {
+            if ($messaggio_errore === null) try {
                 $this->dbModel->inserisciIndicatoriESG(
                     $indicatore,
                     $usernameAmministratore,
@@ -62,10 +62,10 @@ class AmministratoreController {
                 exit();
             } catch (\PDOException $e) {
                 if ($e->getCode() === "45000") {
-                    $errore = $e->errorInfo[2];
+                    $messaggio_errore = $e->errorInfo[2];
                 } else {
                     error_log($e->getMessage());
-                    $errore = "Errore durante la l'inserimento dell'indicatore ESG. Riprova.";
+                    $messaggio_errore = "Errore durante l'inserimento dell'indicatore ESG. Riprova.";
                 }
             }
         }
@@ -75,7 +75,7 @@ class AmministratoreController {
 
     // Inserire voci contabili (template)
     public function template() {
-        $errore = null;
+        $messaggio_errore = null;
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $voceContabile = $_POST["voceContabile"] ?? "";
@@ -89,11 +89,11 @@ class AmministratoreController {
             }
             catch (\PDOException $e) {
                 if ($e->getCode() === "45000") {
-                    $errore = $e->errorInfo[2];
+                    $messaggio_errore = $e->errorInfo[2];
                 }
                 else {
                     error_log($e->getMessage());
-                    $errore = "Errore durante l'inserimento della voce contabile. Riprova.";
+                    $messaggio_errore = "Errore durante l'inserimento della voce contabile. Riprova.";
                 }
             }
         }
@@ -103,7 +103,7 @@ class AmministratoreController {
 
     // Associare revisore ESG ad un bilancio aziendale
     public function associazione() {
-        $errore = null;
+        $messaggio_errore = null;
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $usernameRevisore = $_POST["usernameRevisore"] ?? "";
@@ -117,11 +117,11 @@ class AmministratoreController {
             }
             catch (\PDOException $e) {
                 if ($e->getCode() === "45000") {
-                    $errore = $e->errorInfo[2];
+                    $messaggio_errore = $e->errorInfo[2];
                 }
                 else {
                     error_log($e->getMessage());
-                    $errore = "Errore durante l'associazione. Riprova.";
+                    $messaggio_errore = "Errore durante l'associazione. Riprova.";
                 }
             }
         }

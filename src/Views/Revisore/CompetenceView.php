@@ -8,12 +8,12 @@
     <a href="/Revisore" class="btn-back">⬅ Torna alla Dashboard</a>
     <h2>Aggiungi una nuova competenza</h2>
 
-    <?php if (!empty($data['messaggio_successo'])): ?>
-        <h3 style="color: green;"><?= $data['messaggio_successo'] ?></h3>
+    <?php if (!empty($messaggio_successo)): ?>
+        <h3 style="color: green;"><?= $messaggio_successo ?></h3>
     <?php endif; ?>
 
-    <?php if (!empty($data['messaggio_errore'])): ?>
-        <h3 style="color: red;"><?= $data['messaggio_errore'] ?></h3>
+    <?php if (!empty($messaggio_errore)): ?>
+        <h3 style="color: red;"><?= $messaggio_errore ?></h3>
     <?php endif; ?>
 
     <form action ="" method="POST">

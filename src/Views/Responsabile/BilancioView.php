@@ -8,11 +8,11 @@
     <a href="/Responsabile" class="btn-back">⬅ Torna alla Dashboard</a>
     <h2>Creazione Nuovo Bilancio di Esercizio</h2>
 
-    <?php if (!empty($data['messaggio_successo'])): ?>
-        <h3 style="color: green;"><?= $data['messaggio_successo'] ?></h3>
+    <?php if (!empty($messaggio_successo)): ?>
+        <h3 style="color: green;"><?= $messaggio_successo ?></h3>
     <?php endif; ?>
-    <?php if (!empty($data['messaggio_errore'])): ?>
-        <h3 style="color: red;"><?= $data['messaggio_errore'] ?></h3>
+    <?php if (!empty($messaggio_errore)): ?>
+        <h3 style="color: red;"><?= $messaggio_errore ?></h3>
     <?php endif; ?>
 
     <form action="" method="POST">
@@ -21,7 +21,7 @@
             <label>Seleziona la tua Azienda:</label><br>
             <select name="ragione_sociale" required>
                 <option value="" disabled selected>-- Scegli Azienda --</option>
-                <?php foreach ($data['aziende'] as $azienda): ?>
+                <?php foreach ($aziende as $azienda): ?>
                     <option value="<?= $azienda['RagioneSociale'] ?>"><?= $azienda['Nome'] ?> (<?= $azienda['RagioneSociale'] ?>)</option>
                 <?php endforeach; ?>
             </select><br><br>
@@ -35,7 +35,7 @@
         <fieldset>
             <legend>Popolamento Voci Contabili (Template)</legend>
             <!-- Generazione dinamica delle voci provenienti dal database -->
-            <?php foreach ($data['voci_template'] as $voce): ?>
+            <?php foreach ($voci_template as $voce): ?>
                 <label>
                     <strong><?= $voce['NomeVoceContabile'] ?></strong><br>
                     <small><?= $voce['Descrizione'] ?></small>

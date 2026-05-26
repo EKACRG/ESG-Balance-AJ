@@ -13,63 +13,39 @@ class RevisoreController {
             exit;
         }
     }
+
     // Dashboard revisore
     public function index() {
-
         $username = $_SESSION['username'];
-
-        $sbloccaValutazioni = 
-            $this->dbModel->haBilanciDaValutare($username);
-
+        $sbloccaValutazioni = $this->dbModel->haBilanciDaValutare($username);
         include BASE_PATH . '/Views/Revisore/RevisoreView.php';
     }
 
     // Gestione competenze
     public function competenze() {
+        $messaggio_errore = null;
+        $messaggio_successo = null;
 
-        $data = [
-            'messaggio_successo' => null,
-            'messaggio_errore' => null
-        ];
-
-        if (
-            $_SERVER["REQUEST_METHOD"] == "POST" &&
-            isset($_POST['salva_competenza'])
-        ) {
-
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_competenza'])) {
             $username = $_SESSION["username"];
             $competenza = $_POST['nome_competenza'];
             $livello = $_POST['livello'];
 
             if ($livello < 0 || $livello > 5) {
-
-                $data['messaggio_errore'] =
-                    "Livello non valido (0-5)";
-
+                $messaggio_errore = "Livello non valido (0-5)";
             } else {
-
                 try {
-
-                    $this->dbModel->inserisciCompetenza(
-                        $username,
-                        $competenza,
-                        $livello
-                    );
-
-                    $data['messaggio_successo'] =
-                        "Competenza salvata con successo!";
-
-                } catch (\PDOException $e) {
-
-                    if ($e->getCode() == 23000) {
-
-                        $data['messaggio_errore'] =
-                            "Competenza già assegnata.";
-
+                    $this->dbModel->inserisciCompetenza($username, $competenza, $livello);
+                    $messaggio_successo = "Competenza salvata con successo!";
+                } 
+                catch (\PDOException $e) {
+                    if ($e->getCode() === "45000") {
+                        $messaggio_errore = $e->errorInfo[2];
+                    } elseif ($e->getCode() == 23000) {
+                        $messaggio_errore = "Competenza già assegnata.";
                     } else {
-
-                        $data['messaggio_errore'] =
-                            "Errore DB: " . $e->getMessage();
+                        error_log($e->getMessage());
+                        $messaggio_errore = "Errore durante il salvataggio della competenza. Riprova.";
                     }
                 }
             }
@@ -80,36 +56,22 @@ class RevisoreController {
 
     // Gestione note
     public function note() {
-
         $username = $_SESSION['username'];
+        $messaggio_successo = null;
+        $messaggio_errore = null;
+        $bilanci_assegnati = [];
+        $voci_contabili = [];
 
-        $data = [
-            'messaggio_successo' => null,
-            'messaggio_errore' => null,
-            'bilanci_assegnati' => [],
-            'voci_contabili' => []
-        ];
-
-        if (
-            $_SERVER["REQUEST_METHOD"] == "POST" &&
-            isset($_POST['salva_nota'])
-        ) {
-
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_nota'])) {
             $nomeVoce = $_POST['nome_voce'];
-
-            $bilancioSelezionato =
-                $_POST['bilancio_selezionato'] ?? '';
-
+            $bilancioSelezionato = $_POST['bilancio_selezionato'] ?? '';
             $parts = explode('|', $bilancioSelezionato);
-
             $ragioneSociale = $parts[0] ?? '';
             $dataCreazione = $parts[1] ?? '';
-
             $dataNota = $_POST['data_nota'];
             $testo = $_POST['testo'];
 
             try {
-
                 $this->dbModel->inserisciNota(
                     $username,
                     $nomeVoce,
@@ -119,36 +81,27 @@ class RevisoreController {
                     $testo
                 );
 
-                $data['messaggio_successo'] =
-                    "Nota aggiunta con successo!";
-
-            } catch (\PDOException $e) {
-
-                if ($e->getCode() == 23000) {
-
-                    $data['messaggio_errore'] =
-                        "Nota già inserita.";
-
+                $messaggio_successo = "Nota aggiunta con successo!";
+            } 
+            catch (\PDOException $e) {
+                if ($e->getCode() === "45000") {
+                    $messaggio_errore = $e->errorInfo[2];
+                } elseif ($e->getCode() == 23000) {
+                    $messaggio_errore = "Nota già inserita.";
                 } else {
-
-                    $data['messaggio_errore'] =
-                        "Errore database: " . $e->getMessage();
+                    error_log($e->getMessage());
+                    $messaggio_errore = "Errore durante l'inserimento della nota. Riprova.";
                 }
             }
         }
 
         try {
-
-            $data['bilanci_assegnati'] =
-                $this->dbModel->getBilanciRevisore($username);
-
-            $data['voci_contabili'] =
-                $this->dbModel->getVociContabili();
-
-        } catch (\PDOException $e) {
-
-            $data['messaggio_errore'] =
-                "Errore caricamento dati: " . $e->getMessage();
+            $bilanci_assegnati = $this->dbModel->getBilanciRevisore($username);
+            $voci_contabili = $this->dbModel->getVociContabili();
+        } 
+        catch (\PDOException $e) {
+            error_log($e->getMessage());
+            $messaggio_errore = "Errore durante il caricamento dei dati. Riprova.";
         }
 
         include BASE_PATH . '/Views/Revisore/NoteView.php';
@@ -156,29 +109,18 @@ class RevisoreController {
 
     // Gestione giudizi
     public function giudizio() {
-
         $usernameRevisore = $_SESSION['username'];
+        $messaggio_successo = null;
+        $messaggio_errore = null;
+        $bilanci_assegnati = [];
 
-        $data = [
-            'messaggio_successo' => null,
-            'messaggio_errore' => null,
-            'bilanci_assegnati' => []
-        ];
-
-        if (
-            $_SERVER["REQUEST_METHOD"] == "POST" &&
-            isset($_POST['salva_giudizio'])
-        ) {
-
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_giudizio'])) {
             $esito = $_POST['esito'];
             $dataGiudizio = $_POST['data_giudizio'];
             $campoRilievi = trim($_POST['campo_rilievi']);
-
             $parts = explode('|', $_POST['bilancio_selezionato']);
-
             $ragioneSociale = $parts[0] ?? '';
             $dataCreazione = $parts[1] ?? '';
-
             $esiti_validi = [
                 'approvazione',
                 'approvazione con rilievi',
@@ -186,14 +128,10 @@ class RevisoreController {
             ];
 
             if (!in_array($esito, $esiti_validi)) {
-
-                $data['messaggio_errore'] =
-                    "Esito non valido.";
-
-            } else {
-
+                $messaggio_errore = "Esito non valido.";
+            } 
+            else {
                 try {
-
                     $this->dbModel->salvaGiudizio(
                         $usernameRevisore,
                         $ragioneSociale,
@@ -203,19 +141,19 @@ class RevisoreController {
                         $campoRilievi
                     );
 
-                    $data['messaggio_successo'] =
-                        "Giudizio salvato con successo!";
-
+                    $messaggio_successo = "Giudizio salvato con successo!";
                 } catch (\PDOException $e) {
-
-                    $data['messaggio_errore'] =
-                        "Errore DB: " . $e->getMessage();
+                    if ($e->getCode() === "45000") {
+                        $messaggio_errore = $e->errorInfo[2];
+                    } else {
+                        error_log($e->getMessage());
+                        $messaggio_errore = "Errore durante il salvataggio del giudizio. Riprova.";
+                    }
                 }
             }
         }
 
-        $data['bilanci_assegnati'] =
-            $this->dbModel->getBilanciRevisore($usernameRevisore);
+        $bilanci_assegnati = $this->dbModel->getBilanciRevisore($usernameRevisore);
 
         include BASE_PATH . '/Views/Revisore/GiudizioView.php';
     }

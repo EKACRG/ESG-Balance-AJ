@@ -25,10 +25,8 @@ class ResponsabileController {
 
 
     public function Azienda(){
-        $data = [
-            'messaggio_successo' => null,
-            'messaggio_errore'   => null
-        ];
+        $messaggio_errore = null;
+        $messaggio_successo = null;
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_azienda'])) {
 
@@ -42,7 +40,7 @@ class ResponsabileController {
             $logoPath = "";
             $tipi_consentiti = ['image/jpeg', 'image/png', 'image/gif'];
             if (!isset($_FILES["logo"]) || $_FILES["logo"]["error"] !== UPLOAD_ERR_OK || !in_array($_FILES["logo"]["type"], $tipi_consentiti)) {
-                $data['messaggio_errore'] = "Logo non valido.";
+                $messaggio_errore = "Logo non valido.";
             } else {
                 $logoPath = "/uploads/" . time() . "_" . basename($_FILES["logo"]["name"]);
 
@@ -61,9 +59,14 @@ class ResponsabileController {
                         move_uploaded_file($_FILES["logo"]["tmp_name"], BASE_PATH . $logoPath);
                     }
 
-                    $data['messaggio_successo'] = "Azienda registrata!";
+                    $messaggio_successo = "Azienda registrata!";
                 } catch (\PDOException $e) {
-                    $data['messaggio_errore'] = "Errore DB: " . $e->getMessage();
+                    if ($e->getCode() === "45000") {
+                        $messaggio_errore = $e->errorInfo[2];
+                    } else {
+                        error_log($e->getMessage());
+                        $messaggio_errore = "Errore durante la registrazione dell'azienda. Riprova.";
+                    }
                 }
             }
         }
@@ -72,17 +75,15 @@ class ResponsabileController {
     }
 
     public function bilancio(){
-        $data = [
-            'messaggio_successo' => null,
-            'messaggio_errore' => null,
-            'aziende' => [],
-            'voci_template' => []
-        ];
+        $messaggio_errore = null;
+        $messaggio_successo = null;
+        $aziende = [];
+        $voci_template = [];
 
         $username = $_SESSION['username'];
 
-        $data['aziende'] = $this->dbModel->getAziendeByResponsabile($username);
-        $data['voci_template'] = $this->dbModel->getVociTemplate();
+        $aziende = $this->dbModel->getAziendeByResponsabile($username);
+        $voci_template = $this->dbModel->getVociTemplate();
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_bilancio'])) {
 
@@ -103,9 +104,14 @@ class ResponsabileController {
                     }
                 }
 
-                $data['messaggio_successo'] = "Bilancio creato!";
+                $messaggio_successo = "Bilancio creato!";
             } catch (\PDOException $e) {
-                $data['messaggio_errore'] = "Errore DB: " . $e->getMessage();
+                if ($e->getCode() === "45000") {
+                    $messaggio_errore = $e->errorInfo[2];
+                } else {
+                    error_log($e->getMessage());
+                    $messaggio_errore = "Errore durante la creazione del bilancio. Riprova.";
+                }
             }
         }
 
@@ -113,17 +119,15 @@ class ResponsabileController {
     }
 
     public function esgIndicatore(){
-        $data = [
-            'messaggio_successo' => null,
-            'messaggio_errore' => null,
-            'indicatori' => [],
-            'voci_bilancio' => []
-        ];
+        $messaggio_errore = null;
+        $messaggio_successo = null;
+        $indicatori = [];
+        $voci_bilancio = [];
 
         $username = $_SESSION['username'];
 
-        $data['indicatori'] = $this->dbModel->getIndicatoriESG();
-        $data['voci_bilancio'] = $this->dbModel->getVociBilancioResponsabile($username);
+        $indicatori = $this->dbModel->getIndicatoriESG();
+        $voci_bilancio = $this->dbModel->getVociBilancioResponsabile($username);
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_esg'])) {
 
@@ -140,9 +144,14 @@ class ResponsabileController {
                     $_POST['data_rilevazione']
                 );
 
-                $data['messaggio_successo'] = "Valore ESG salvato!";
+                $messaggio_successo = "Valore ESG salvato!";
             } catch (\PDOException $e) {
-                $data['messaggio_errore'] = "Errore DB: " . $e->getMessage();
+                if ($e->getCode() === "45000") {
+                    $messaggio_errore = $e->errorInfo[2];
+                } else {
+                    error_log($e->getMessage());
+                    $messaggio_errore = "Errore durante l'inserimento del valore ESG. Riprova.";
+                }
             }
         }
 

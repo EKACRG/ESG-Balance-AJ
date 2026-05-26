@@ -33,25 +33,25 @@ try {
         }
         else {
             http_response_code(404);
-            $errore = "404 - Metodo non trovato";
+            $messaggio_errore = "404 - Metodo non trovato";
             include BASE_PATH . "/Views/ErrorView.php";
         }
     }
     else {
         http_response_code(404);
-        $errore = "404 - Pagina non trovata";
+        $messaggio_errore = "404 - Pagina non trovata";
         include BASE_PATH . "/Views/ErrorView.php";
     }
 }
 catch (\PDOException $e) {
     http_response_code(500);
     error_log($e->getMessage());
-    $errore = "Errore di connessione. Riprova più tardi.";
+    $messaggio_errore = "Errore di connessione. Riprova più tardi.";
     include BASE_PATH . "/Views/ErrorView.php";
 }
 catch (\Exception $e) {
     http_response_code(500);
     error_log($e->getMessage());
-    $errore = "Si è verificato un errore. Riprova più tardi.";
+    $messaggio_errore = "Si è verificato un errore. Riprova più tardi.";
     include BASE_PATH . "/Views/ErrorView.php";
 }

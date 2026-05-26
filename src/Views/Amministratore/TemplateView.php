@@ -6,8 +6,8 @@
     <body>
         <h1>Inserimento Voce Contabile</h1>
 
-        <?php if(isset($errore)): ?>
-            <p style="color: red;"><?= $errore ?></p>
+        <?php if(isset($messaggio_errore)): ?>
+            <p style="color: red;"><?= $messaggio_errore ?></p>
         <?php endif; ?>
 
         <form method="POST" action="/amministratore/template">

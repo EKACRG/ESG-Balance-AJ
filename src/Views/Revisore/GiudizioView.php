@@ -8,12 +8,12 @@
     <a href="/Revisore" class="btn-back">⬅ Torna alla Dashboard</a>
     <h2>Emetti il tuo Giudizio sul Bilancio Aziendale</h2>
 
-    <?php if (!empty($data['messaggio_successo'])): ?>
-        <h3 style="color: green;"><?= $data['messaggio_successo'] ?></h3>
+    <?php if (!empty($messaggio_successo)): ?>
+        <h3 style="color: green;"><?= $messaggio_successo ?></h3>
     <?php endif; ?>
 
-    <?php if (!empty($data['messaggio_errore'])): ?>
-        <h3 style="color: red;"><?= $data['messaggio_errore'] ?></h3>
+    <?php if (!empty($messaggio_errore)): ?>
+        <h3 style="color: red;"><?= $messaggio_errore ?></h3>
     <?php endif; ?>
 
     <form action="" method="POST">
@@ -23,7 +23,7 @@
             <label>Bilancio da valutare:</label><br>
             <select name="bilancio_selezionato" required>
                 <option value="">-- Scegli un bilancio --</option>
-                <?php foreach ($data['bilanci_assegnati'] as $bilancio): ?>
+                <?php foreach ($bilanci_assegnati as $bilancio): ?>
                     <option value="<?= $bilancio['RAGIONESOCIALE'] . '|' . $bilancio['DATACREAZIONE'] ?>">
                         <?= $bilancio['RAGIONESOCIALE'] ?> (<?= $bilancio['DATACREAZIONE'] ?>)
                     </option>
