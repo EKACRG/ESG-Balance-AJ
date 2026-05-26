@@ -12,5 +12,14 @@ RUN a2enmod rewrite headers
 
 COPY vhost.conf /etc/apache2/sites-available/000-default.conf
 
+# Aumenta i limiti di upload per file PDF
+RUN echo "upload_max_filesize = 50M" > /usr/local/etc/php/conf.d/uploads.ini && \
+    echo "post_max_size = 50M" >> /usr/local/etc/php/conf.d/uploads.ini
+
+# Crea cartella uploads con permessi per Apache
+RUN mkdir -p /var/www/html/uploads && \
+    chown -R www-data:www-data /var/www/html/uploads && \
+    chmod -R 755 /var/www/html/uploads
+
 WORKDIR /var/www/html
 EXPOSE 80
