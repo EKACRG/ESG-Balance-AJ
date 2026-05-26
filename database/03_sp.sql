@@ -239,6 +239,12 @@ DROP PROCEDURE IF EXISTS CreaBilancio;
 DELIMITER |
 CREATE PROCEDURE CreaBilancio( IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE)
 BEGIN
+	-- Validazione bilancio non esiste già
+	IF EXISTS (SELECT 1 FROM BILANCIO WHERE RagioneSociale = P_RagioneSociale AND DataCreazione = P_DataCreazione) THEN
+		SIGNAL SQLSTATE '45000'
+		SET MESSAGE_TEXT = 'Errore: Bilancio esistente';
+	END IF;
+
 	INSERT INTO BILANCIO (RagioneSociale, DataCreazione, Stato)
     VALUES (P_RagioneSociale, P_DataCreazione, 'bozza');
 END |
@@ -248,6 +254,12 @@ DROP PROCEDURE IF EXISTS PopolaVoceBilancio;
 DELIMITER |
 CREATE PROCEDURE PopolaVoceBilancio( IN P_NomeVoce VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE,IN P_ValoreNumerico DECIMAL(12,2))
 BEGIN
+	-- Validazione voce non già inserita per questo bilancio
+	IF EXISTS (SELECT 1 FROM VOCE_BILANCIO WHERE NomeVoceBilancio = P_NomeVoce AND RagioneSociale = P_RagioneSociale AND DataCreazione = P_DataCreazione) THEN
+		SIGNAL SQLSTATE '45000'
+		SET MESSAGE_TEXT = 'Errore: Voce esistente per questo bilancio';
+	END IF;
+
 	INSERT INTO VOCE_BILANCIO (NomeVoceBilancio, RagioneSociale, DataCreazione, ValoreNumerico) 
     VALUES ( P_NomeVoce, P_RagioneSociale ,  P_DataCreazione , P_ValoreNumerico);
 END |
@@ -258,6 +270,12 @@ DROP PROCEDURE IF EXISTS InserisciValoreESG;
 DELIMITER |
 CREATE PROCEDURE InserisciValoreESG( IN P_NomeIndicatore VARCHAR(100), IN P_NomeVoceBilancio VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE,IN P_Valore DECIMAL(15,2),IN P_Fonte VARCHAR(255),IN P_Data DATE)
 BEGIN
+	-- Validazione valore non negativo (opzionale, ma logico per un indicatore)
+	IF P_Valore < 0 THEN
+		SIGNAL SQLSTATE '45000'
+		SET MESSAGE_TEXT = 'Errore: Il valore dell''indicatore non può essere negativo';
+	END IF;
+
 	INSERT INTO MEMORIZZA (NomeIndicatore, NomeVoceBilancio, RagioneSociale, DataCreazione, Valore, Fonte, Data)
     VALUES (P_NomeIndicatore, P_NomeVoceBilancio, P_RagioneSociale, P_DataCreazione, P_Valore, P_Fonte, P_Data);    
 END |

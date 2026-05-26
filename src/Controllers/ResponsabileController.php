@@ -16,7 +16,6 @@ class ResponsabileController {
 
     public function index() {
         $username = $_SESSION['username'];
-
         $haAziende = $this->dbModel->haAlmenoUnAzienda($username);
         $haBilanci = $this->dbModel->haAlmenoUnBilancio($username);
 
@@ -24,12 +23,11 @@ class ResponsabileController {
     }
 
 
-    public function Azienda(){
+    public function azienda(){
         $messaggio_errore = null;
         $messaggio_successo = null;
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_azienda'])) {
-
             $usernameResponsabile = $_SESSION['username'];
             $ragioneSociale = $_POST['ragione_sociale'];
             $nome = $_POST['nome_azienda'];
@@ -60,7 +58,8 @@ class ResponsabileController {
                     }
 
                     $messaggio_successo = "Azienda registrata!";
-                } catch (\PDOException $e) {
+                } 
+                catch (\PDOException $e) {
                     if ($e->getCode() === "45000") {
                         $messaggio_errore = $e->errorInfo[2];
                     } else {
@@ -79,14 +78,11 @@ class ResponsabileController {
         $messaggio_successo = null;
         $aziende = [];
         $voci_template = [];
-
         $username = $_SESSION['username'];
-
         $aziende = $this->dbModel->getAziendeByResponsabile($username);
         $voci_template = $this->dbModel->getVociTemplate();
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_bilancio'])) {
-
             try {
                 $this->dbModel->creaBilancio(
                     $_POST['ragione_sociale'],
@@ -105,10 +101,12 @@ class ResponsabileController {
                 }
 
                 $messaggio_successo = "Bilancio creato!";
-            } catch (\PDOException $e) {
+            } 
+            catch (\PDOException $e) {
                 if ($e->getCode() === "45000") {
                     $messaggio_errore = $e->errorInfo[2];
-                } else {
+                } 
+                else {
                     error_log($e->getMessage());
                     $messaggio_errore = "Errore durante la creazione del bilancio. Riprova.";
                 }
@@ -123,14 +121,11 @@ class ResponsabileController {
         $messaggio_successo = null;
         $indicatori = [];
         $voci_bilancio = [];
-
         $username = $_SESSION['username'];
-
         $indicatori = $this->dbModel->getIndicatoriESG();
         $voci_bilancio = $this->dbModel->getVociBilancioResponsabile($username);
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_esg'])) {
-
             $chiavi = explode('|', $_POST['voce_bilancio_keys']);
 
             try {
@@ -145,10 +140,12 @@ class ResponsabileController {
                 );
 
                 $messaggio_successo = "Valore ESG salvato!";
-            } catch (\PDOException $e) {
+            } 
+            catch (\PDOException $e) {
                 if ($e->getCode() === "45000") {
                     $messaggio_errore = $e->errorInfo[2];
-                } else {
+                } 
+                else {
                     error_log($e->getMessage());
                     $messaggio_errore = "Errore durante l'inserimento del valore ESG. Riprova.";
                 }
