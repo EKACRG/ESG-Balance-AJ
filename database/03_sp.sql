@@ -164,9 +164,9 @@ DELIMITER ;
 
 
 -- Inserimento da parte dei revisori le proprie competenze
-DROP PROCEDURE IF EXISTS InserimentoCompetenze;
+DROP PROCEDURE IF EXISTS InserisciCompetenze;
 DELIMITER |
-CREATE PROCEDURE InserimentoCompetenze ( IN P_Username_Revisore VARCHAR(30), IN P_NomeCompetenza VARCHAR(100),IN P_Livello INT)
+CREATE PROCEDURE InserisciCompetenze ( IN P_Username_Revisore VARCHAR(30), IN P_NomeCompetenza VARCHAR(100),IN P_Livello INT)
 BEGIN
 		-- Salva la competenza nella tabella principale (ignora se esiste già)
 		INSERT IGNORE INTO COMPETENZA (NomeCompetenza) VALUES (P_NomeCompetenza);

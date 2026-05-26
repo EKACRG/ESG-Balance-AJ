@@ -311,7 +311,7 @@ class DatabaseModel {
     ): void {
 
         // Prepariamo la chiamata alla Stored Procedure MySQL con 3 parametri    
-        $stmt = $this->pdo->prepare("CALL InserimentoCompetenze(?,?,?)");
+        $stmt = $this->pdo->prepare("CALL InserisciCompetenze(?,?,?)");
 
         // Eseguiamo la query passando l'array con le 3 variabili esattamente nell'ordine previsto
         $stmt->execute([
