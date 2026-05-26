@@ -69,7 +69,7 @@ DROP PROCEDURE IF EXISTS RegistraResponsabile;
 DELIMITER |
 CREATE PROCEDURE RegistraResponsabile(IN UsernameUtente VARCHAR(30), IN CurriculumVitae VARCHAR(255))
 BEGIN
-    IF CurriculumVitae NOT LIKE '%.pdf' THEN
+    IF LOWER(CurriculumVitae) NOT LIKE '%.pdf' THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Errore: Curriculum Vitae deve essere in formato PDF (.pdf)';
     END IF;
