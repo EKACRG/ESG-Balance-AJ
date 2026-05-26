@@ -168,11 +168,17 @@ DROP PROCEDURE IF EXISTS InserisciCompetenze;
 DELIMITER |
 CREATE PROCEDURE InserisciCompetenze ( IN P_Username_Revisore VARCHAR(30), IN P_NomeCompetenza VARCHAR(100),IN P_Livello INT)
 BEGIN
-		-- Salva la competenza nella tabella principale (ignora se esiste già)
-		INSERT IGNORE INTO COMPETENZA (NomeCompetenza) VALUES (P_NomeCompetenza);
-        
-        INSERT INTO POSSIEDE (Username_Revisore, NomeCompetenza, Livello)
-        VALUES (P_Username_Revisore,P_NomeCompetenza,P_Livello);
+    -- Validazione livello
+    IF P_Livello < 0 OR P_Livello > 5 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Errore: Livello competenza non valido (deve essere tra 0 e 5)';
+    END IF;
+
+    -- Salva la competenza nella tabella principale (ignora se esiste già)
+    INSERT IGNORE INTO COMPETENZA (NomeCompetenza) VALUES (P_NomeCompetenza);
+    
+    INSERT INTO POSSIEDE (Username_Revisore, NomeCompetenza, Livello)
+    VALUES (P_Username_Revisore,P_NomeCompetenza,P_Livello);
 END |
 DELIMITER ;
 
@@ -182,8 +188,14 @@ DROP PROCEDURE IF EXISTS InserisciAnnotazione;
 DELIMITER |
 CREATE PROCEDURE InserisciAnnotazione (IN  P_Username_Revisore VARCHAR(30), IN P_NomeVoceBilancio VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE, IN P_Data DATE, IN P_Testo TEXT)
 BEGIN
-        INSERT INTO ANNOTAZIONE (Username_Revisore, NomeVoceBilancio, RagioneSociale, DataCreazione, Data, Testo)
-        VALUES (P_Username_Revisore,P_NomeVoceBilancio,P_RagioneSociale, P_DataCreazione, P_Data,P_Testo);
+    -- Validazione: nota già inserita
+    IF EXISTS (SELECT 1 FROM ANNOTAZIONE WHERE Username_Revisore = P_Username_Revisore AND NomeVoceBilancio = P_NomeVoceBilancio AND RagioneSociale = P_RagioneSociale AND DataCreazione = P_DataCreazione AND Data = P_Data) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Errore: Nota presente per questa voce di bilancio in questa data';
+    END IF;
+
+    INSERT INTO ANNOTAZIONE (Username_Revisore, NomeVoceBilancio, RagioneSociale, DataCreazione, Data, Testo)
+    VALUES (P_Username_Revisore,P_NomeVoceBilancio,P_RagioneSociale, P_DataCreazione, P_Data,P_Testo);
 END |
 DELIMITER ;
 
@@ -192,15 +204,15 @@ DROP PROCEDURE IF EXISTS InserisciGiudizio;
 DELIMITER |
 CREATE PROCEDURE InserisciGiudizio (IN  P_Username_Revisore VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE, IN P_Esito VARCHAR(30), IN P_CampoRilievi TEXT, IN P_Data DATE)
 BEGIN
-		IF P_Esito IN ('approvazione', 'approvazione con rilievi', 'respingimento') THEN
-			UPDATE VALUTA_GIUDIZIO 
-            SET Esito = P_Esito,
-				CampoRilievi = P_CampoRilievi,
-                Data = P_Data
-			WHERE Username_Revisore = P_Username_Revisore AND
-				  RagioneSociale = P_RagioneSociale AND
-                  DataCreazione = P_DataCreazione;
-		ELSE
+    IF P_Esito IN ('approvazione', 'approvazione con rilievi', 'respingimento') THEN
+        UPDATE VALUTA_GIUDIZIO 
+        SET Esito = P_Esito,
+            CampoRilievi = P_CampoRilievi,
+            Data = P_Data
+        WHERE Username_Revisore = P_Username_Revisore AND
+            RagioneSociale = P_RagioneSociale AND
+            DataCreazione = P_DataCreazione;
+    ELSE
         SIGNAL SQLSTATE '45000' 
         SET MESSAGE_TEXT = 'Errore: Esito non valido. Deve essere: approvazione, approvazione con rilievi, o respingimento';
     END IF;

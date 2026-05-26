@@ -41,8 +41,6 @@ class RevisoreController {
                 catch (\PDOException $e) {
                     if ($e->getCode() === "45000") {
                         $messaggio_errore = $e->errorInfo[2];
-                    } elseif ($e->getCode() == 23000) {
-                        $messaggio_errore = "Competenza già assegnata.";
                     } else {
                         error_log($e->getMessage());
                         $messaggio_errore = "Errore durante il salvataggio della competenza. Riprova.";
@@ -86,8 +84,6 @@ class RevisoreController {
             catch (\PDOException $e) {
                 if ($e->getCode() === "45000") {
                     $messaggio_errore = $e->errorInfo[2];
-                } elseif ($e->getCode() == 23000) {
-                    $messaggio_errore = "Nota già inserita.";
                 } else {
                     error_log($e->getMessage());
                     $messaggio_errore = "Errore durante l'inserimento della nota. Riprova.";
