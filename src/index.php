@@ -28,6 +28,12 @@ try {
 
     if ($controllerName && class_exists($controllerClass)) {
         $controller = new $controllerClass($dbModel);
+        if ($controllerClass === 'Controllers\StatsController' && !$dbModel->isLoggedIn()) {
+            http_response_code(404);
+            $messaggio_errore = "404 - Pagina non trovata";
+            include BASE_PATH . "/Views/ErrorView.php";
+            exit;
+        }
         if (method_exists($controller, $methodName)) {
             $controller->$methodName();
         }
