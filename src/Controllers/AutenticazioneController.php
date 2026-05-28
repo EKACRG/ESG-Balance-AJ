@@ -40,6 +40,14 @@ class AutenticazioneController {
     public function signup() {
         $messaggio_errore = null;
 
+        if ($this->dbModel->isLoggedIn()) {
+
+            $tipo = $_SESSION["tipo_utente"] ?? null;
+
+            header("Location: /" . $tipo . "/index");
+            exit;
+        }
+
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $username = $_POST["username"] ?? "";
             $password = $_POST["password"] ?? "";
