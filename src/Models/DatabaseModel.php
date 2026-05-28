@@ -11,22 +11,26 @@ class DatabaseModel {
 
     // METODI PER STATS
     public function getNumAziende() {
-        $stmt = $this->pdo->query("SELECT * FROM NUM_AZIENDE");
+        $stmt = $this->pdo->prepare("SELECT * FROM NUM_AZIENDE");
+        $stmt->execute();
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
     public function getNumRevisori() {
-        $stmt = $this->pdo->query("SELECT * FROM NUM_REVISORI_ESG");
+        $stmt = $this->pdo->prepare("SELECT * FROM NUM_REVISORI_ESG");
+        $stmt->execute();
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
     public function getAziendaPiuAffidabile() {
-        $stmt = $this->pdo->query("SELECT * FROM AZIENDA_PIU_AFFIDABILE");
+        $stmt = $this->pdo->prepare("SELECT * FROM AZIENDA_PIU_AFFIDABILE");
+        $stmt->execute();
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
     public function getClassificaBilanci() {
-        $stmt = $this->pdo->query("SELECT * FROM CLASSIFICA_BILANCI");
+        $stmt = $this->pdo->prepare("SELECT * FROM CLASSIFICA_BILANCI");
+        $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
@@ -184,12 +188,20 @@ class DatabaseModel {
     }
 
     public function getRevisori(): array {
-        $stmt = $this->pdo->query("SELECT Username FROM REVISORE_ESG");
+        $stmt = $this->pdo->prepare("SELECT Username FROM REVISORE_ESG");
+        $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     public function getBilanci(): array {
-        $stmt = $this->pdo->query("SELECT RagioneSociale, DataCreazione, Stato FROM BILANCIO WHERE Stato IN ('bozza', 'In revisione')");
+        $stmt = $this->pdo->prepare("
+            SELECT RagioneSociale, DataCreazione, Stato 
+            FROM BILANCIO 
+            WHERE Stato IN ('bozza', 'In revisione')
+        ");
+
+        $stmt->execute();
+
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
@@ -232,7 +244,8 @@ class DatabaseModel {
 
     // Recupera tutte le voci del Template del bilancio
     public function getVociTemplate(): array {
-        $stmt = $this->pdo->query("SELECT NomeVoceContabile, Descrizione FROM VOCE_CONTABILE");
+        $stmt = $this->pdo->prepare("SELECT NomeVoceContabile, Descrizione FROM VOCE_CONTABILE");
+        $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
@@ -255,7 +268,8 @@ class DatabaseModel {
     // METODI PER INDICATORE ESG
     // Recupera tutti gli Indicatori ESG disponibili a sistema
     public function getIndicatoriESG(): array {
-        $stmt = $this->pdo->query("SELECT NomeIndicatore FROM INDICATORE_ESG");
+        $stmt = $this->pdo->prepare("SELECT NomeIndicatore FROM INDICATORE_ESG");
+        $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
@@ -407,7 +421,8 @@ class DatabaseModel {
 
     // Estrae tutte le Voci Contabili dal Template condiviso
     public function getVociContabili() {
-        $stmt = $this->pdo->query("SELECT NomeVoceContabile FROM VOCE_CONTABILE");
+        $stmt = $this->pdo->prepare("SELECT NomeVoceContabile FROM VOCE_CONTABILE");
+        $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 }
