@@ -11,6 +11,9 @@
     <p>Seleziona l'operazione che desideri effettuare:</p>
 
     <div class="dashboard-menu">
+        <a href="/stats/index" class="btn-stats">
+            Statistiche
+        </a>
         <a href="/responsabile/azienda" class="btn">
             Registra nuova azienda
         </a>

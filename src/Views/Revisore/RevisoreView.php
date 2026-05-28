@@ -11,6 +11,9 @@
     <p>Seleziona l'operazione che desideri effettuare:</p>
 
     <div class="dashboard-menu">
+        <a href="/stats/index" class="btn-stats">
+            Statistiche
+        </a>
         <a href="/revisore/Competenze" class="btn">
             Inserisci Nuova Competenza
         </a>

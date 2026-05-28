@@ -8,6 +8,9 @@
 
         <p>Benvenuto <?= $_SESSION["username"] ?>!</p>
 
+        <a href="/stats/index" class="btn-stats">
+            Statistiche
+        </a>
         <a href="/amministratore/indicatoriESG">Inserisci Indicatori ESG</a>
         <a href="/amministratore/template">Inserisci Template Bilancio</a>
         <a href="/amministratore/associazione">Associa Revisore</a>
