@@ -59,19 +59,24 @@ class AutenticazioneController {
             $emailAggiuntive = $_POST["emailAggiuntive"] ?? [];
             
             $curriculumVitaePath = "";
-            if ($tipoUtente === "responsabile") {
-                if (!isset($_FILES["curriculumVitae"]) || $_FILES["curriculumVitae"]["error"] !== UPLOAD_ERR_OK) {
-                    $messaggio_errore = "Curriculum non caricato correttamente.";
-                }
-                elseif ($_FILES["curriculumVitae"]["type"] !== "application/pdf") {
-                    $messaggio_errore = "Il curriculum deve essere un file PDF.";
-                }
-                else {
-                    $curriculumVitaePath = "/uploads/" . time() . "_" . basename($_FILES["curriculumVitae"]["name"]);
-                }
-            }
             
-            if ($messaggio_errore === null) try {
+            try {
+
+                if ($tipoUtente === "responsabile") {
+                    if (!isset($_FILES["curriculumVitae"]) || $_FILES["curriculumVitae"]["error"] !== UPLOAD_ERR_OK) {
+                    throw new \Exception("Curriculum non caricato correttamente.");
+                }
+                if ($_FILES["curriculumVitae"]["type"] !== "application/pdf") {
+                    throw new \Exception("Il curriculum deve essere un file PDF.");
+                }
+                $filename = time() . "_" . basename($_FILES["curriculumVitae"]["name"]);
+                $destination = $_SERVER['DOCUMENT_ROOT'] . "/uploads/" . $filename;
+                if (!move_uploaded_file($_FILES["curriculumVitae"]["tmp_name"], $destination)) {
+                    throw new \Exception("Errore upload file.");
+                }
+                $curriculumVitaePath = "/uploads/" . $filename;
+            }
+
                 $this->dbModel->signup(
                     $username,
                     $password,
@@ -84,19 +89,14 @@ class AutenticazioneController {
                     $emailAggiuntive
                 );
 
-                if ($curriculumVitaePath !== "") {
-                    move_uploaded_file($_FILES["curriculumVitae"]["tmp_name"], BASE_PATH . $curriculumVitaePath);
-                }
-
                 header("Location: /autenticazione/login");
                 exit;
-            } catch (\PDOException $e) {
-                if ($e->getCode() === "45000") {
-                    $messaggio_errore = $e->errorInfo[2];
-                } else {
-                    error_log($e->getMessage());
-                    $messaggio_errore = "Errore durante la registrazione. Riprova.";
-                }
+            } catch (\Exception $e) {
+                if ($curriculumVitaePath !== "" && file_exists($_SERVER['DOCUMENT_ROOT'] . $curriculumVitaePath)) {
+                unlink($_SERVER['DOCUMENT_ROOT'] . $curriculumVitaePath);
+            }
+
+            $messaggio_errore = $e->getMessage();
             }
         }
 
