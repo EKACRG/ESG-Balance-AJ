@@ -37,10 +37,15 @@ class ResponsabileController {
 
             $logoPath = "";
             $tipi_consentiti = ['image/jpeg', 'image/png', 'image/gif'];
-            if (!isset($_FILES["logo"]) || $_FILES["logo"]["error"] !== UPLOAD_ERR_OK || !in_array($_FILES["logo"]["type"], $tipi_consentiti)) {
-                $messaggio_errore = "Logo non valido.";
-            } else {
-                $logoPath = "/uploads/" . time() . "_" . basename($_FILES["logo"]["name"]);
+            if (!isset($_FILES["logo"]) || $_FILES["logo"]["error"] !== UPLOAD_ERR_OK ){
+                    $messaggio_errore = "Logo non valido.";
+                }
+                elseif (!in_array($_FILES["logo"]["type"], $tipi_consentiti)) {
+                    $messaggio_errore = "Tipo file non consentito.";
+                }
+                else {
+                    $logoPath = "/uploads/" . time() . "_" . basename($_FILES["logo"]["name"]);
+                }
 
                 try {
                     $this->dbModel->registraAzienda(
@@ -68,7 +73,6 @@ class ResponsabileController {
                     }
                 }
             }
-        }
 
         include BASE_PATH . '/Views/Responsabile/AziendaView.php';
     }

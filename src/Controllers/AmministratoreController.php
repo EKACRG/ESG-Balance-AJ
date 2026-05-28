@@ -34,13 +34,15 @@ class AmministratoreController {
 
             $immagine = "";
             $tipi_consentiti = ['image/jpeg', 'image/png', 'image/gif'];
-            if (isset($_FILES["immagine"]) && $_FILES["immagine"]["error"] === UPLOAD_ERR_OK) {
-                if (!in_array($_FILES["immagine"]["type"], $tipi_consentiti)) {
-                    $messaggio_errore = "Tipo immagine non consentito.";
-                } else {
-                    $immagine = "/uploads/" . time() . "_" . basename($_FILES["immagine"]["name"]);
-                }
+            if (!isset($_FILES["immagine"]) || $_FILES["immagine"]["error"] !== UPLOAD_ERR_OK) {
+                $messaggio_errore = "Immagine non caricata correttamente.";
             }
+            elseif (!in_array($_FILES["immagine"]["type"], $tipi_consentiti)) {
+                    $messaggio_errore = "Tipo immagine non consentito.";
+            } else {
+                    $immagine = "/uploads/" . time() . "_" . basename($_FILES["immagine"]["name"]);
+            }
+        }
 
             if ($messaggio_errore === null) try {
                 $this->dbModel->inserisciIndicatoriESG(
@@ -68,7 +70,6 @@ class AmministratoreController {
                     $messaggio_errore = "Errore durante l'inserimento dell'indicatore ESG. Riprova.";
                 }
             }
-        }
 
         include BASE_PATH . "/Views/Amministratore/IndicatoriESGView.php";
     }

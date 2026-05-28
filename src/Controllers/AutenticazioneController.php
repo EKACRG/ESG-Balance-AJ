@@ -59,14 +59,18 @@ class AutenticazioneController {
             $emailAggiuntive = $_POST["emailAggiuntive"] ?? [];
             
             $curriculumVitaePath = "";
-            if ($tipoUtente === "responsabile" && isset($_FILES["curriculumVitae"]) && $_FILES["curriculumVitae"]["error"] === UPLOAD_ERR_OK) {
-                if ($_FILES["curriculumVitae"]["type"] !== "application/pdf") {
+            if ($tipoUtente === "responsabile") {
+                if (!isset($_FILES["curriculumVitae"]) || $_FILES["curriculumVitae"]["error"] !== UPLOAD_ERR_OK) {
+                    $messaggio_errore = "Curriculum non caricato correttamente.";
+                }
+                elseif ($_FILES["curriculumVitae"]["type"] !== "application/pdf") {
                     $messaggio_errore = "Il curriculum deve essere un file PDF.";
-                } else {
+                }
+                else {
                     $curriculumVitaePath = "/uploads/" . time() . "_" . basename($_FILES["curriculumVitae"]["name"]);
                 }
             }
-
+            
             if ($messaggio_errore === null) try {
                 $this->dbModel->signup(
                     $username,
