@@ -11,6 +11,15 @@ class AutenticazioneController {
     public function login() {
         $messaggio_errore = null;
 
+        // Se già loggato redirect alla sua pagina utente
+        if ($this->dbModel->isLoggedIn()) {
+
+            $tipo = $_SESSION["tipo_utente"] ?? null;
+
+            header("Location: /" . $tipo . "/index");
+            exit;
+        }
+
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $username = $_POST["username"] ?? "";
             $password = $_POST["password"] ?? "";
