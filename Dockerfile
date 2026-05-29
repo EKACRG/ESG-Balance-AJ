@@ -21,5 +21,8 @@ RUN mkdir -p /var/www/html/uploads && \
     chown -R www-data:www-data /var/www/html/uploads && \
     chmod -R 755 /var/www/html/uploads
 
+# MongoDB
+RUN pecl install mongodb && docker-php-ext-enable mongodb
+
 WORKDIR /var/www/html
 EXPOSE 80

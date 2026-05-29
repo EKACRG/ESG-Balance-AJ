@@ -21,6 +21,14 @@ services:
     ports:
       - "3306:3306"
 
+  mongodb:
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodbdata:/var/lib/mongodb
+
 volumes:
   mysqldata: {}
+  mongodbdata: {}
   uploads: {}
