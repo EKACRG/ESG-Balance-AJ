@@ -67,7 +67,12 @@ class ResponsabileController {
                 catch (\PDOException $e) {
                     if ($e->getCode() === "45000") {
                         $messaggio_errore = $e->errorInfo[2];
-                    } else {
+                    }
+                    else if ($e->getCode() === "23000") {
+                        error_log($e->getMessage());
+                        $messaggio_errore = "Azienda presente. Riprova.";
+                    }
+                    else {
                         error_log($e->getMessage());
                         $messaggio_errore = "Errore durante la registrazione dell'azienda. Riprova.";
                     }
