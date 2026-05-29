@@ -42,7 +42,6 @@ class AmministratoreController {
             } else {
                     $immagine = "/uploads/" . time() . "_" . basename($_FILES["immagine"]["name"]);
             }
-        }
 
             if ($messaggio_errore === null) try {
                 $this->dbModel->inserisciIndicatoriESG(
@@ -70,7 +69,8 @@ class AmministratoreController {
                     $messaggio_errore = "Errore durante l'inserimento dell'indicatore ESG. Riprova.";
                 }
             }
-
+        }
+        
         include BASE_PATH . "/Views/Amministratore/IndicatoriESGView.php";
     }
 
