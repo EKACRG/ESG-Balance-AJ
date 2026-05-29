@@ -15,14 +15,14 @@
 
         <!-- Numero revisori esg -->
         <?php if($data["num_revisori"]): ?>
-            <p>Numero totale di aziende: <?= $data["num_revisori"]["num_revisori_esg"] ?></p>
+            <p>Numero totale di revisori: <?= $data["num_revisori"]["num_revisori_esg"] ?></p>
         <?php else: ?>
             <p>Nessun dato disponibile sul numero di revisori ESG.</p>
         <?php endif; ?>
 
         <!-- Azienda più affidabile -->
         <?php if($data["azienda_piu_affidabile"]): ?>
-            <p>Numero totale di aziende: <?= $data["azienda_piu_affidabile"]["RagioneSociale"] ?>
+            <p>Azienda più affidabile: <?= $data["azienda_piu_affidabile"]["RagioneSociale"] ?>
             (<?= $data["azienda_piu_affidabile"]["affidabilita"] ?>%)</p>
         <?php else: ?>
             <p>Nessun dato disponibile sull'affidabilità delle aziende.</p>
