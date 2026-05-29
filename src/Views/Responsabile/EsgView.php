@@ -15,7 +15,7 @@
         <h3 style="color: red;"><?= $messaggio_errore ?></h3>
     <?php endif; ?>
 
-    <form action="" method="POST">
+    <form action="/responsabile/esgIndicatore" method="POST">
         <label>Scegli l'Indicatore ESG:</label><br>
         <select name="nome_indicatore" required>
             <option value="" disabled selected>-- Seleziona --</option>

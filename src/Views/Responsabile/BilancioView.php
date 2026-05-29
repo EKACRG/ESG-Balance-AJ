@@ -15,7 +15,7 @@
         <h3 style="color: red;"><?= $messaggio_errore ?></h3>
     <?php endif; ?>
 
-    <form action="" method="POST">
+    <form action="/responsabile/bilancio" method="POST">
         <fieldset>
             <legend>Dati del Bilancio</legend>
             <label>Seleziona la tua Azienda:</label><br>

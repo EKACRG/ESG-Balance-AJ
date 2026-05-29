@@ -17,7 +17,7 @@
     <?php endif; ?>
 
     <!-- L'attributo enctype è fondamentale per inviare il Logo! -->
-    <form action="" method="POST" enctype="multipart/form-data">
+    <form action="/responsabile/azienda" method="POST" enctype="multipart/form-data">
         
         <fieldset>
             <legend>Dati Aziendali</legend>

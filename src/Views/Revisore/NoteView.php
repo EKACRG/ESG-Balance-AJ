@@ -16,7 +16,7 @@
         <h3 style="color: red;"><?= $messaggio_errore ?></h3>
     <?php endif; ?>
 
-    <form action="" method="POST">
+    <form action="/revisore/note" method="POST">
 
         <!-- Identificazione del Bilancio-->
         <fieldset>
@@ -27,8 +27,8 @@
                     <option value="">-- Scegli un bilancio --</option>
                     <?php foreach ($bilanci_assegnati as $bilancio): ?>
                         <!-- Mostriamo all'utente Ragione Sociale e Data, passiamo al server la Ragione Sociale -->
-                        <option value="<?= $bilancio['RAGIONESOCIALE'] . '|' . $bilancio['DATACREAZIONE'] ?>">
-                            <?= $bilancio['RAGIONESOCIALE'] ?> (del <?= $bilancio['DATACREAZIONE'] ?>)
+                        <option value="<?= $bilancio['RagioneSociale'] . '|' . $bilancio['DataCreazione'] ?>">
+                            <?= $bilancio['RagioneSociale'] ?> (del <?= $bilancio['DataCreazione'] ?>)
                         </option>
                     <?php endforeach; ?>
                 </select>

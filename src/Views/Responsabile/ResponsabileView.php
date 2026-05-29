@@ -33,7 +33,7 @@
         
         <!-- Logica IF per bottone Indicatore ESG -->
         <?php if ($haBilanci): ?>
-            <a href="/responsabile/Esg" class="btn">
+            <a href="/responsabile/esgIndicatore" class="btn">
                 Inserimento valori degli indicatori ESG
             </a>
         <?php else: ?>

@@ -16,7 +16,7 @@
         <h3 style="color: red;"><?= $messaggio_errore ?></h3>
     <?php endif; ?>
 
-    <form action ="" method="POST">
+    <form action="/revisore/competenze" method="POST">
 
         <label>Nome Competenza:</label><br>
         <input type="text" name="nome_competenza" placeholder="Es. Sostenibilità" required><br><br>

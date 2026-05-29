@@ -16,7 +16,7 @@
         <h3 style="color: red;"><?= $messaggio_errore ?></h3>
     <?php endif; ?>
 
-    <form action="" method="POST">
+    <form action="/revisore/giudizio" method="POST">
         
         <fieldset>
             <legend>Identificativi della Revisione</legend>
@@ -24,8 +24,8 @@
             <select name="bilancio_selezionato" required>
                 <option value="">-- Scegli un bilancio --</option>
                 <?php foreach ($bilanci_assegnati as $bilancio): ?>
-                    <option value="<?= $bilancio['RAGIONESOCIALE'] . '|' . $bilancio['DATACREAZIONE'] ?>">
-                        <?= $bilancio['RAGIONESOCIALE'] ?> (<?= $bilancio['DATACREAZIONE'] ?>)
+                    <option value="<?= $bilancio['RagioneSociale'] . '|' . $bilancio['DataCreazione'] ?>">
+                        <?= $bilancio['RagioneSociale'] ?> (<?= $bilancio['DataCreazione'] ?>)
                     </option>
                 <?php endforeach; ?>
             </select><br><br>
