@@ -1,7 +1,6 @@
 USE esgbalance;
 
 -- Creazione delle tabelle
-
 CREATE TABLE IF NOT EXISTS UTENTI (
   Username VARCHAR(30) PRIMARY KEY,
   Password VARCHAR(255) NOT NULL,
@@ -133,52 +132,3 @@ CREATE TABLE IF NOT EXISTS MEMORIZZA (
     FOREIGN KEY (NomeIndicatore) REFERENCES INDICATORE_ESG(NomeIndicatore) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (NomeVoceBilancio, RagioneSociale, DataCreazione) REFERENCES VOCE_BILANCIO(NomeVoceBilancio, RagioneSociale, DataCreazione) ON UPDATE CASCADE ON DELETE CASCADE
 );
-
-INSERT INTO UTENTI (Username, Password, CF, DataNascita, LuogoNascita)
-VALUES ('resp1', 'pass123', 'RSSMRA80A01H501X', '1985-05-10', 'Milano');
-
-INSERT INTO RESPONSABILE_AZIENDALE (Username, CurriculumVitae)
-VALUES ('resp1', 'CV esempio');
-
-INSERT INTO AZIENDA (RagioneSociale, Nome, PartitaIVA, Settore, NumDipendenti, Logo, NumBilanci, Username_Responsabile)
-VALUES ('ESG SRL', 'ESG', '12345678901', 'Finanza', 50, NULL, 0, 'resp1');
-
-INSERT INTO BILANCIO (RagioneSociale, DataCreazione, Stato)
-VALUES ('ESG SRL', '2026-01-01', 'In revisione');
-
-INSERT INTO UTENTI (Username, Password, CF, DataNascita, LuogoNascita)
-VALUES ('revisore1', 'pass123', 'RSSMRA80A01H501Y', '1990-01-01', 'Roma');
-
-INSERT INTO REVISORE_ESG (Username, NumeroRevisioni, IndiceAffidabilita)
-VALUES ('revisore1', 0, 0.00);
-
-INSERT INTO VALUTA_GIUDIZIO (Username_Revisore, RagioneSociale, DataCreazione)
-VALUES ('revisore1', 'ESG SRL', '2026-01-01');
-
-SELECT * FROM VALUTA_GIUDIZIO;
-
--- Creazione amministratore per il template contabile
-INSERT INTO UTENTI (Username, Password, CF, DataNascita, LuogoNascita)
-VALUES ('admin1', 'pass123', 'RSSMRA80A01H501Z', '1980-01-01', 'Napoli');
-
-INSERT INTO AMMINISTRATORE (Username)
-VALUES ('admin1');
-
--- Creazione voce contabile del template
-INSERT INTO VOCE_CONTABILE (
-    NomeVoceContabile,
-    Username_Amministratore,
-    Descrizione
-)
-VALUES (
-    'Ricavi',
-    'admin1',
-    'Ricavi annuali aziendali'
-);
-
--- Popolamento della voce nel bilancio
-INSERT INTO VOCE_BILANCIO (NomeVoceBilancio, RagioneSociale, DataCreazione, ValoreNumerico)
-VALUES ('Ricavi', 'ESG SRL', '2026-01-01', 150000.00);
-
--- Verifica
-SELECT * FROM UTENTI;
