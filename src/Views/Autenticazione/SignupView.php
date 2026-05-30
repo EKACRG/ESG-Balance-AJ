@@ -18,7 +18,15 @@
             <input type="password" name="password" required>
             
             <label>Codice Fiscale:</label>
-            <input type="text" name="cf" required>
+            <input 
+            type="text"
+            name="cf"
+            maxlength="16"
+            minlength="16"
+            pattern="[A-Z0-9]{16}"
+            title="Il codice fiscale deve contenere esattamente 16 caratteri alfanumerici"
+            required
+            >
 
             <label>Data di nascita:</label>
             <input type="date" name="dataNascita" required>

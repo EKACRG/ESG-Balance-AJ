@@ -1,5 +1,6 @@
 <?php
 namespace Controllers;
+use Services\GestoreErroreDb;
 
 class ResponsabileController {
     private $dbModel;
@@ -74,17 +75,7 @@ class ResponsabileController {
                     $messaggio_successo = "Azienda registrata!";
                 } 
                 catch (\PDOException $e) {
-                    if ($e->getCode() === "45000") {
-                        $messaggio_errore = $e->errorInfo[2];
-                    }
-                    else if ($e->getCode() === "23000") {
-                        error_log($e->getMessage());
-                        $messaggio_errore = "Azienda presente. Riprova.";
-                    }
-                    else {
-                        error_log($e->getMessage());
-                        $messaggio_errore = "Errore durante la registrazione dell'azienda. Riprova.";
-                    }
+                    $messaggio_errore = GestoreErroreDb::handle($e, "azienda");
                 }
             }
         }
@@ -122,13 +113,7 @@ class ResponsabileController {
                 $messaggio_successo = "Bilancio creato!";
             } 
             catch (\PDOException $e) {
-                if ($e->getCode() === "45000") {
-                    $messaggio_errore = $e->errorInfo[2];
-                } 
-                else {
-                    error_log($e->getMessage());
-                    $messaggio_errore = "Errore durante la creazione del bilancio. Riprova.";
-                }
+                $messaggio_errore = GestoreErroreDb::handle($e, "bilancio");
             }
         }
 
@@ -161,13 +146,7 @@ class ResponsabileController {
                 $messaggio_successo = "Valore ESG salvato!";
             } 
             catch (\PDOException $e) {
-                if ($e->getCode() === "45000") {
-                    $messaggio_errore = $e->errorInfo[2];
-                } 
-                else {
-                    error_log($e->getMessage());
-                    $messaggio_errore = "Errore durante l'inserimento del valore ESG. Riprova.";
-                }
+                $messaggio_errore = GestoreErroreDb::handle($e, "esg");
             }
         }
 

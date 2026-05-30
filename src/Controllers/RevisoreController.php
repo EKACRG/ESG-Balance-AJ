@@ -1,5 +1,6 @@
 <?php
 namespace Controllers;
+use Services\GestoreErroreDb;
 
 class RevisoreController {
     private $dbModel;
@@ -39,12 +40,7 @@ class RevisoreController {
                     $messaggio_successo = "Competenza salvata con successo!";
                 } 
                 catch (\PDOException $e) {
-                    if ($e->getCode() === "45000") {
-                        $messaggio_errore = $e->errorInfo[2];
-                    } else {
-                        error_log($e->getMessage());
-                        $messaggio_errore = "Errore durante il salvataggio della competenza. Riprova.";
-                    }
+                    $messaggio_errore = GestoreErroreDb::handle($e, "possiede");
                 }
             }
         }
@@ -82,12 +78,7 @@ class RevisoreController {
                 $messaggio_successo = "Nota aggiunta con successo!";
             } 
             catch (\PDOException $e) {
-                if ($e->getCode() === "45000") {
-                    $messaggio_errore = $e->errorInfo[2];
-                } else {
-                    error_log($e->getMessage());
-                    $messaggio_errore = "Errore durante l'inserimento della nota. Riprova.";
-                }
+                $messaggio_errore = GestoreErroreDb::handle($e, "annotazione");
             }
         }
 
@@ -139,12 +130,7 @@ class RevisoreController {
 
                     $messaggio_successo = "Giudizio salvato con successo!";
                 } catch (\PDOException $e) {
-                    if ($e->getCode() === "45000") {
-                        $messaggio_errore = $e->errorInfo[2];
-                    } else {
-                        error_log($e->getMessage());
-                        $messaggio_errore = "Errore durante il salvataggio del giudizio. Riprova.";
-                    }
+                    $messaggio_errore = GestoreErroreDb::handle($e, "giudizio");
                 }
             }
         }

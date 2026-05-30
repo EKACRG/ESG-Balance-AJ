@@ -10,6 +10,10 @@
             <p style="color: red;"><?= $messaggio_errore ?></p>
         <?php endif; ?>
 
+        <?php if (!empty($messaggio_successo)): ?>
+            <p style="color: green;"><?= $messaggio_successo ?></p>
+        <?php endif; ?>
+
         <form method="POST" action="/amministratore/indicatoriESG" enctype="multipart/form-data">
             <label>Nome Indicatore:</label>
             <input type="text" name="indicatore" required>

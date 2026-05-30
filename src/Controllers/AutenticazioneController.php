@@ -1,5 +1,6 @@
 <?php 
 namespace Controllers;
+use Services\GestoreErroreDb;
 
 class AutenticazioneController {
     private $dbModel;
@@ -91,12 +92,12 @@ class AutenticazioneController {
 
                 header("Location: /autenticazione/login");
                 exit;
-            } catch (\Exception $e) {
+            } catch (\PDOException $e) {
                 if ($curriculumVitaePath !== "" && file_exists($_SERVER['DOCUMENT_ROOT'] . $curriculumVitaePath)) {
                 unlink($_SERVER['DOCUMENT_ROOT'] . $curriculumVitaePath);
             }
 
-            $messaggio_errore = $e->getMessage();
+            $messaggio_errore = GestoreErroreDb::handle($e, "utente");
             }
         }
 

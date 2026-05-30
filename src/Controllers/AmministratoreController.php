@@ -1,5 +1,6 @@
 <?php
 namespace Controllers;
+use Services\GestoreErroreDb;
 
 class AmministratoreController {
     private $dbModel;
@@ -22,6 +23,7 @@ class AmministratoreController {
     // Inserimento indicatori ESG
     public function indicatoriESG() {
         $messaggio_errore = null;
+        $messaggio_successo = null;
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $indicatore = $_POST["indicatore"] ?? "";
@@ -59,15 +61,9 @@ class AmministratoreController {
                     move_uploaded_file($_FILES["immagine"]["tmp_name"], BASE_PATH . $immagine);
                 }
 
-                header("Location: /amministratore/indicatoriESG");
-                exit();
+                $messaggio_successo = "Indicatore ESG inserito con successo!";
             } catch (\PDOException $e) {
-                if ($e->getCode() === "45000") {
-                    $messaggio_errore = $e->errorInfo[2];
-                } else {
-                    error_log($e->getMessage());
-                    $messaggio_errore = "Errore durante l'inserimento dell'indicatore ESG. Riprova.";
-                }
+                $messaggio_errore = GestoreErroreDb::handle($e, "indicatore_esg");
             }
         }
         
@@ -77,6 +73,7 @@ class AmministratoreController {
     // Inserire voci contabili (template)
     public function template() {
         $messaggio_errore = null;
+        $messaggio_successo = null;
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $voceContabile = $_POST["voceContabile"] ?? "";
@@ -85,17 +82,10 @@ class AmministratoreController {
 
             try {
                 $this->dbModel->inserisciVoceContabile($voceContabile, $usernameAmministratore, $descrizione);
-                header("Location: /amministratore/template");
-                exit;
+                $messaggio_successo = "Voce contabile inserito con successo!";
             }
             catch (\PDOException $e) {
-                if ($e->getCode() === "45000") {
-                    $messaggio_errore = $e->errorInfo[2];
-                }
-                else {
-                    error_log($e->getMessage());
-                    $messaggio_errore = "Errore durante l'inserimento della voce contabile. Riprova.";
-                }
+                $messaggio_errore = GestoreErroreDb::handle($e, "voce_contabile");
             }
         }
 
@@ -105,6 +95,7 @@ class AmministratoreController {
     // Associare revisore ESG ad un bilancio aziendale
     public function associazione() {
         $messaggio_errore = null;
+        $messaggio_successo = null;
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $usernameRevisore = $_POST["usernameRevisore"] ?? "";
@@ -113,17 +104,10 @@ class AmministratoreController {
 
             try {
                 $this->dbModel->associaRevisore($usernameRevisore, $ragioneSociale, $dataCreazione);
-                header("Location: /amministratore/associazione");
-                exit;
+                $messaggio_successo = "associazione revisore con successo!";
             }
             catch (\PDOException $e) {
-                if ($e->getCode() === "45000") {
-                    $messaggio_errore = $e->errorInfo[2];
-                }
-                else {
-                    error_log($e->getMessage());
-                    $messaggio_errore = "Errore durante l'associazione. Riprova.";
-                }
+                $messaggio_errore = GestoreErroreDb::handle($e, "giudizio");
             }
         }
 
