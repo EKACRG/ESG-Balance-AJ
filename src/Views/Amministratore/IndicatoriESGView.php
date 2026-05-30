@@ -22,7 +22,14 @@
             <input type="file" name="immagine" accept=".jpg,.jpeg,.png" required>
 
             <label>Rilevanza (0-10):</label>
-            <input type="number" name="rilevanza" min="0" max="10" required>
+            <input
+                type="number"
+                name="rilevanza"
+                min="0"
+                max="10"
+                title="La rilevanza deve essere un numero compreso tra 0 e 10"
+                required
+            >
 
             <label>Tipo Indicatore:</label>
             <select name="tipoIndicatore" id="tipoIndicatore" required>
