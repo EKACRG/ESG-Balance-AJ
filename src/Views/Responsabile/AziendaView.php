@@ -28,7 +28,15 @@
             <input type="text" name="nome_azienda" required><br><br>
 
             <label>Partita IVA:</label><br>
-            <input type="text" name="partita_iva" required><br><br>
+            <input
+                type="text"
+                name="partita_iva"
+                maxlength="11"
+                minlength="11"
+                pattern="[0-9]{11}"
+                title="La partita IVA deve contenere esattamente 11 cifre"
+                required
+            ><br><br>
 
             <label>Settore di Appartenenza:</label><br>
             <input type="text" name="settore" required><br><br>

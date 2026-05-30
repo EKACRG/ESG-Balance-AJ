@@ -32,6 +32,15 @@ class ResponsabileController {
             $ragioneSociale = $_POST['ragione_sociale'];
             $nome = $_POST['nome_azienda'];
             $partitaIva = $_POST['partita_iva'];
+            if (strlen($partitaIva) < 11) {
+                $messaggio_errore = "La partita IVA è troppo corta. Deve contenere 11 cifre.";
+            }
+            elseif (strlen($partitaIva) > 11) {
+                $messaggio_errore = "La partita IVA è troppo lunga. Deve contenere 11 cifre.";
+            }
+            elseif (!ctype_digit($partitaIva)) {
+                $messaggio_errore = "La partita IVA deve contenere solo numeri.";
+            }
             $settore = $_POST['settore'];
             $numDipendenti = $_POST['num_dipendenti'];
 
@@ -39,14 +48,14 @@ class ResponsabileController {
             $tipi_consentiti = ['image/jpeg', 'image/png', 'image/gif'];
             if (!isset($_FILES["logo"]) || $_FILES["logo"]["error"] !== UPLOAD_ERR_OK ){
                     $messaggio_errore = "Logo non valido.";
-                }
-                elseif (!in_array($_FILES["logo"]["type"], $tipi_consentiti)) {
-                    $messaggio_errore = "Tipo file non consentito.";
-                }
-                else {
-                    $logoPath = "/uploads/" . time() . "_" . basename($_FILES["logo"]["name"]);
-                }
-
+            }
+            elseif (!in_array($_FILES["logo"]["type"], $tipi_consentiti)) {
+                $messaggio_errore = "Tipo file non consentito.";
+            }
+            else {
+                $logoPath = "/uploads/" . time() . "_" . basename($_FILES["logo"]["name"]);
+            }
+            if ($messaggio_errore === null) {
                 try {
                     $this->dbModel->registraAzienda(
                         $usernameResponsabile,
@@ -78,6 +87,7 @@ class ResponsabileController {
                     }
                 }
             }
+        }
 
         include BASE_PATH . '/Views/Responsabile/AziendaView.php';
     }
