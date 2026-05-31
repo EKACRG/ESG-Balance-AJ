@@ -10,6 +10,8 @@ services:
       - uploads:/var/www/html/uploads
     depends_on:
       - mysql
+      - mongodb
+    command: bash -c "composer install --working-dir=/var/www/html && apache2-foreground"
 
   mysql:
     image: mysql:8.0
@@ -23,6 +25,8 @@ services:
 
   mongodb:
     image: mongo:6.0
+    env_file:
+      - .env
     ports:
       - "27017:27017"
     volumes:

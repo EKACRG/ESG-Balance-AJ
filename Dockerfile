@@ -24,5 +24,8 @@ RUN mkdir -p /var/www/html/uploads && \
 # MongoDB
 RUN pecl install mongodb && docker-php-ext-enable mongodb
 
+# Installa composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
 WORKDIR /var/www/html
 EXPOSE 80
