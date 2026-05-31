@@ -6,7 +6,7 @@ class AmministratoreController {
     private $dbModel;
     private $logModel;
 
-    public function __construct($dbModel) {
+    public function __construct($dbModel, $logModel) {
         $this->dbModel = $dbModel;
         $this->logModel = $logModel;
 
