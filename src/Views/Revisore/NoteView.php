@@ -2,65 +2,64 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>ESG Balance - Inserimento Nota a Bilancio</title>
+    <title>ESG Balance - Nota a Bilancio</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <a href="/Revisore" class="btn-back">⬅ Torna alla Dashboard</a>
-    <h2>Aggiungi una nota su una voce di bilancio</h2>
+<body class="bg-light min-vh-100 d-flex align-items-center justify-content-center py-5">
 
-    <?php if (!empty($messaggio_successo)): ?>
-        <h3 style="color: green;"><?= $messaggio_successo ?></h3>
-    <?php endif; ?>
-
-    <?php if (!empty($messaggio_errore)): ?>
-        <h3 style="color: red;"><?= $messaggio_errore ?></h3>
-    <?php endif; ?>
-
-    <form action="/revisore/note" method="POST">
-
-        <!-- Identificazione del Bilancio-->
-        <fieldset>
-            <legend>Dati del Bilancio da revisionare</legend>
-             <div class="mb-3">
-                <label class="form-label">Seleziona il Bilancio:</label>
-                <select name="bilancio_selezionato" class="form-select" required>
-                    <option value="">-- Scegli un bilancio --</option>
-                    <?php foreach ($bilanci_assegnati as $bilancio): ?>
-                        <!-- Mostriamo all'utente Ragione Sociale e Data, passiamo al server la Ragione Sociale -->
-                        <option value="<?= $bilancio['RagioneSociale'] . '|' . $bilancio['DataCreazione'] ?>">
-                            <?= $bilancio['RagioneSociale'] ?> (del <?= $bilancio['DataCreazione'] ?>)
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-        </fieldset><br>
-
-        <!-- Identificazione della Voce Contabile -->
-        <div class="mb-3">
-            <label class="form-label">Voce Contabile:</label>
-            <select name="nome_voce" class="form-select" required>
-                <option value="">-- Scegli la voce --</option>
-                <?php foreach ($voci_contabili as $voce): ?>
-                    <option value="<?= $voce['NomeVoceContabile'] ?>"><?= $voce['NomeVoceContabile'] ?></option>
-                <?php endforeach; ?>
-            </select>
+    <div class="card shadow" style="width: 540px;">
+        <div class="card-header bg-dark text-white p-4">
+            <h4 class="mb-1 fw-bold">ESG Balance</h4>
+            <small class="opacity-75">Aggiungi una nota su una voce di bilancio</small>
         </div>
+        <div class="card-body p-4">
 
-        <!-- Dati della Nota -->
-        <fieldset>
-            <legend>La tua Annotazione</legend>
-            <label>Data della Nota:</label><br>
-            <input type="date" name="data_nota" required><br><br>
+            <?php if (!empty($messaggio_successo)): ?>
+                <div class="alert alert-success py-2"><?= $messaggio_successo ?></div>
+            <?php endif; ?>
+            <?php if (!empty($messaggio_errore)): ?>
+                <div class="alert alert-danger py-2"><?= $messaggio_errore ?></div>
+            <?php endif; ?>
 
-            <label>Testo della Nota:</label><br>
-            <textarea name="testo" rows="4" cols="50" placeholder="Scrivi qui il tuo commento..." required></textarea><br><br>
-        </fieldset><br>
+            <form action="/revisore/note" method="POST">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Bilancio da revisionare</label>
+                    <select name="bilancio_selezionato" class="form-select" required>
+                        <option value="">— Scegli un bilancio —</option>
+                        <?php foreach ($bilanci_assegnati as $bilancio): ?>
+                            <option value="<?= $bilancio['RagioneSociale'] . '|' . $bilancio['DataCreazione'] ?>">
+                                <?= $bilancio['RagioneSociale'] ?> (del <?= $bilancio['DataCreazione'] ?>)
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Voce Contabile</label>
+                    <select name="nome_voce" class="form-select" required>
+                        <option value="">— Scegli la voce —</option>
+                        <?php foreach ($voci_contabili as $voce): ?>
+                            <option value="<?= $voce['NomeVoceContabile'] ?>"><?= $voce['NomeVoceContabile'] ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Data della Nota</label>
+                    <input type="date" name="data_nota" class="form-control" max="<?= date('Y-m-d', strtotime('yesterday')) ?>" required>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Testo della Nota</label>
+                    <textarea name="testo" class="form-control" rows="4"
+                        placeholder="Scrivi qui il tuo commento..." required></textarea>
+                </div>
+                <button type="submit" name="salva_nota" class="btn btn-dark w-100">Salva Nota</button>
+            </form>
 
-        <!-- Il 'name' del bottone deve corrispondere all'isset() del Controller -->
-        <button type="submit" name="salva_nota">Salva Nota</button>
-        
-    </form> 
+            <div class="text-center mt-3">
+                <a href="/Revisore" class="text-decoration-none small">← Torna alla dashboard</a>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

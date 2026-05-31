@@ -5,53 +5,59 @@
     <title>ESG Balance - Registrazione Azienda</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <a href="/Responsabile" class="btn-back">⬅ Torna alla Dashboard</a>
-    <h2>Registra una Nuova Azienda</h2>
+<body class="bg-light min-vh-100 d-flex align-items-center justify-content-center py-5">
 
-    <?php if (!empty($messaggio_successo)): ?>
-        <h3 style="color: green;"><?= $messaggio_successo ?></h3>
-    <?php endif; ?>
+    <div class="card shadow" style="width: 540px;">
+        <div class="card-header bg-dark text-white p-4">
+            <h4 class="mb-1 fw-bold">ESG Balance</h4>
+            <small class="opacity-75">Registra una Nuova Azienda</small>
+        </div>
+        <div class="card-body p-4">
 
-    <?php if (!empty($messaggio_errore)): ?>
-        <h3 style="color: red;"><?= $messaggio_errore ?></h3>
-    <?php endif; ?>
+            <?php if (!empty($messaggio_successo)): ?>
+                <div class="alert alert-success py-2"><?= $messaggio_successo ?></div>
+            <?php endif; ?>
+            <?php if (!empty($messaggio_errore)): ?>
+                <div class="alert alert-danger py-2"><?= $messaggio_errore ?></div>
+            <?php endif; ?>
 
-    <!-- L'attributo enctype è fondamentale per inviare il Logo! -->
-    <form action="/responsabile/azienda" method="POST" enctype="multipart/form-data">
-        
-        <fieldset>
-            <legend>Dati Aziendali</legend>
-            <label>Ragione Sociale:</label><br>
-            <input type="text" name="ragione_sociale" placeholder="Es. Rossi & Co. S.p.A." required><br><br>
+            <form action="/responsabile/azienda" method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Ragione Sociale</label>
+                    <input type="text" name="ragione_sociale" class="form-control" placeholder="Es. Rossi & Co. S.p.A." required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Nome Commerciale</label>
+                    <input type="text" name="nome_azienda" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Partita IVA</label>
+                    <input type="text" name="partita_iva" class="form-control"
+                        maxlength="11" minlength="11" pattern="[0-9]{11}"
+                        placeholder="11 cifre numeriche"
+                        title="La partita IVA deve contenere esattamente 11 cifre" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Settore di Appartenenza</label>
+                    <input type="text" name="settore" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Numero Dipendenti</label>
+                    <input type="number" name="num_dipendenti" class="form-control" min="1" required>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Logo Aziendale</label>
+                    <input type="file" name="logo" class="form-control" accept="image/png, image/jpeg, image/gif" required>
+                </div>
+                <button type="submit" name="salva_azienda" class="btn btn-dark w-100">Registra Azienda</button>
+            </form>
 
-            <label>Nome Commerciale:</label><br>
-            <input type="text" name="nome_azienda" required><br><br>
+            <div class="text-center mt-3">
+                <a href="/Responsabile" class="text-decoration-none small">← Torna alla dashboard</a>
+            </div>
+        </div>
+    </div>
 
-            <label>Partita IVA:</label><br>
-            <input
-                type="text"
-                name="partita_iva"
-                maxlength="11"
-                minlength="11"
-                pattern="[0-9]{11}"
-                title="La partita IVA deve contenere esattamente 11 cifre"
-                required
-            ><br><br>
-
-            <label>Settore di Appartenenza:</label><br>
-            <input type="text" name="settore" required><br><br>
-
-            <label>Numero Dipendenti:</label><br>
-            <input type="number" name="num_dipendenti" min="1" required><br><br>
-
-            <label>Logo Aziendale (Solo Immagini):</label><br>
-            <input type="file" name="logo" accept="image/png, image/jpeg, image/gif" required><br><br>
-        </fieldset><br>
-
-        <button type="submit" name="salva_azienda">Registra Azienda nel Sistema</button>
-        
-    </form> 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
