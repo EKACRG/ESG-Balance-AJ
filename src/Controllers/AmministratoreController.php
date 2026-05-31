@@ -63,7 +63,7 @@ class AmministratoreController {
                     move_uploaded_file($_FILES["immagine"]["tmp_name"], BASE_PATH . $immagine);
                 }
 
-                $this->logModel->logEvento("Inserimento indicatore ESG '$indicatore' da parte di $usernameAmministratore")
+                $this->logModel->logEvento("Inserimento indicatore ESG '$indicatore' da parte di $usernameAmministratore");
                 $messaggio_successo = "Indicatore ESG inserito con successo!";
             } catch (\PDOException $e) {
                 $messaggio_errore = GestoreErroreDb::handle($e, "indicatore_esg");
