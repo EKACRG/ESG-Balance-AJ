@@ -27,6 +27,16 @@ try {
     $methodName = isset($parts[1]) && $parts[1] !== '' ? $parts[1] : 'index';
     $controllerClass = 'Controllers\\' . $controllerName;
 
+    if ($controllerName === null) {
+        if ($dbModel->isLoggedIn()) {
+            $tipo = $_SESSION["tipo_utente"] ?? 'autenticazione';
+            header("Location: /" . $tipo . "/index");
+        } else {
+            header("Location: /autenticazione/login");
+        }
+        exit;
+    }
+
     if ($controllerName && class_exists($controllerClass)) {
         $controller = new $controllerClass($dbModel, $logModel);
         if ($controllerClass === 'Controllers\StatsController' && !$dbModel->isLoggedIn()) {
