@@ -16,6 +16,7 @@ spl_autoload_register(function ($class) {
 // Gestione centralizzata degli errori
 try {
     $dbModel = new Models\DatabaseModel();
+    $logModel = new Models\LogModel();
     session_start();
 
     $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -27,7 +28,7 @@ try {
     $controllerClass = 'Controllers\\' . $controllerName;
 
     if ($controllerName && class_exists($controllerClass)) {
-        $controller = new $controllerClass($dbModel);
+        $controller = new $controllerClass($dbModel, $logModel);
         if ($controllerClass === 'Controllers\StatsController' && !$dbModel->isLoggedIn()) {
             http_response_code(404);
             $messaggio_errore = "404 - Pagina non trovata";
