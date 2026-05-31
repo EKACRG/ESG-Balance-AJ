@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
     <head>
-        <title>ESG Balance - Home Amministratore</title>
+        <meta charset="UTF-8">
+        <title>ESG Balance - Dashboard Amministratore</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     </head>
     <body>
         <h1>Home Amministratore</h1>
@@ -19,5 +21,6 @@
 
         <a href="/stats/index">Visualizza Statistiche</a>
         <a href="/autenticazione/logout">Logout</a>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>

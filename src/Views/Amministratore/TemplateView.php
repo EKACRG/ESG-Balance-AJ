@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
     <head>
+        <meta charset="UTF-8">
         <title>ESG Balance - Template Bilancio</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     </head>
     <body>
         <h1>Inserimento Voce Contabile</h1>
@@ -25,5 +27,6 @@
         </form>
 
         <a href="/amministratore/index">Torna alla dashboard</a>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>

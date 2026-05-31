@@ -2,7 +2,8 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>O9 - Crea Bilancio</title>
+    <title>ESG Balance - Creazione Bilancio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     <a href="/Responsabile" class="btn-back">⬅ Torna alla Dashboard</a>
@@ -46,5 +47,6 @@
 
         <button type="submit" name="salva_bilancio">Salva Bilancio</button>
     </form>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

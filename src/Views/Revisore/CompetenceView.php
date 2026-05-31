@@ -2,7 +2,8 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>O5 - Inserisci Competenza</title>
+    <title>ESG Balance - Inserimento Competenza</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     <a href="/Revisore" class="btn-back">⬅ Torna alla Dashboard</a>
@@ -29,5 +30,6 @@
         <button type="submit" name="salva_competenza">Salva Competenza</button>
         
     </form> 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html> 
+</html>

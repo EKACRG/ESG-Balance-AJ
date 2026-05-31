@@ -2,7 +2,8 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard Revisore ESG</title>
+    <title>ESG Balance - Dashboard Responsabile ESG</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     <a href="/autenticazione/logout" class="btn-logout">⬅ Esci - Logout</a>
@@ -46,5 +47,6 @@
             </small>
         <?php endif; ?>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
