@@ -4,9 +4,11 @@ use Services\GestoreErroreDb;
 
 class AutenticazioneController {
     private $dbModel;
+    private $logModel;
 
     public function __construct($dbModel) {
         $this->dbModel = $dbModel;
+        $this->logModel = $logModel;
     }
 
     public function login() {

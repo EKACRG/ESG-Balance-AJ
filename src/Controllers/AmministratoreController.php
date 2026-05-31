@@ -4,9 +4,11 @@ use Services\GestoreErroreDb;
 
 class AmministratoreController {
     private $dbModel;
+    private $logModel;
 
     public function __construct($dbModel) {
         $this->dbModel = $dbModel;
+        $this->logModel = $logModel;
 
         // Controllo utente loggato e tipo utente
         if (!$this->dbModel->isLoggedIn() || $_SESSION["tipo_utente"] !== "amministratore") {
