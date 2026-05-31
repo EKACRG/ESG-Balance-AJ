@@ -39,6 +39,7 @@ class RevisoreController {
             } else {
                 try {
                     $this->dbModel->inserisciCompetenza($username, $competenza, $livello);
+                    $this->logModel->logEvento("Inserimento competenza '$competenza' da parte di $username");
                     $messaggio_successo = "Competenza salvata con successo!";
                 } 
                 catch (\PDOException $e) {
@@ -69,14 +70,15 @@ class RevisoreController {
 
             try {
                 $this->dbModel->inserisciNota(
-                    $username,
-                    $nomeVoce,
+                    $username, 
+                    $nomeVoce, 
                     $ragioneSociale,
-                    $dataCreazione,
-                    $dataNota,
+                    $dataCreazione, 
+                    $dataNota, 
                     $testo
                 );
 
+                $this->logModel->logEvento("Inserimento nota su voce '$nomeVoce' del bilancio '$ragioneSociale' da parte di $username");
                 $messaggio_successo = "Nota aggiunta con successo!";
             } 
             catch (\PDOException $e) {
@@ -110,26 +112,22 @@ class RevisoreController {
             $parts = explode('|', $_POST['bilancio_selezionato']);
             $ragioneSociale = $parts[0] ?? '';
             $dataCreazione = $parts[1] ?? '';
-            $esiti_validi = [
-                'approvazione',
-                'approvazione con rilievi',
-                'respingimento'
-            ];
+            $esiti_validi = ['approvazione', 'approvazione con rilievi', 'respingimento'];
 
             if (!in_array($esito, $esiti_validi)) {
                 $messaggio_errore = "Esito non valido.";
-            } 
-            else {
+            } else {
                 try {
                     $this->dbModel->salvaGiudizio(
-                        $usernameRevisore,
+                        $usernameRevisore, 
                         $ragioneSociale,
-                        $dataCreazione,
-                        $esito,
-                        $dataGiudizio,
+                        $dataCreazione, 
+                        $esito, 
+                        $dataGiudizio, 
                         $campoRilievi
                     );
 
+                    $this->logModel->logEvento("Salvataggio giudizio '$esito' sul bilancio '$ragioneSociale' da parte di $usernameRevisore");
                     $messaggio_successo = "Giudizio salvato con successo!";
                 } catch (\PDOException $e) {
                     $messaggio_errore = GestoreErroreDb::handle($e, "giudizio");

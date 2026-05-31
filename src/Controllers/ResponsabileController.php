@@ -25,8 +25,7 @@ class ResponsabileController {
         include BASE_PATH . '/Views/Responsabile/ResponsabileView.php';
     }
 
-
-    public function azienda(){
+    public function azienda() {
         $messaggio_errore = null;
         $messaggio_successo = null;
 
@@ -35,22 +34,24 @@ class ResponsabileController {
             $ragioneSociale = $_POST['ragione_sociale'];
             $nome = $_POST['nome_azienda'];
             $partitaIva = $_POST['partita_iva'];
+
             if (strlen($partitaIva) < 11) {
                 $messaggio_errore = "La partita IVA è troppo corta. Deve contenere 11 cifre.";
-            }
+            } 
             elseif (strlen($partitaIva) > 11) {
                 $messaggio_errore = "La partita IVA è troppo lunga. Deve contenere 11 cifre.";
-            }
+            } 
             elseif (!ctype_digit($partitaIva)) {
                 $messaggio_errore = "La partita IVA deve contenere solo numeri.";
             }
+
             $settore = $_POST['settore'];
             $numDipendenti = $_POST['num_dipendenti'];
 
             $logoPath = "";
             $tipi_consentiti = ['image/jpeg', 'image/png', 'image/gif'];
-            if (!isset($_FILES["logo"]) || $_FILES["logo"]["error"] !== UPLOAD_ERR_OK ){
-                    $messaggio_errore = "Logo non valido.";
+            if (!isset($_FILES["logo"]) || $_FILES["logo"]["error"] !== UPLOAD_ERR_OK) {
+                $messaggio_errore = "Logo non valido.";
             }
             elseif (!in_array($_FILES["logo"]["type"], $tipi_consentiti)) {
                 $messaggio_errore = "Tipo file non consentito.";
@@ -58,6 +59,7 @@ class ResponsabileController {
             else {
                 $logoPath = "/uploads/" . time() . "_" . basename($_FILES["logo"]["name"]);
             }
+            
             if ($messaggio_errore === null) {
                 try {
                     $this->dbModel->registraAzienda(
@@ -74,6 +76,7 @@ class ResponsabileController {
                         move_uploaded_file($_FILES["logo"]["tmp_name"], BASE_PATH . $logoPath);
                     }
 
+                    $this->logModel->logEvento("Registrazione azienda '$ragioneSociale' da parte di $usernameResponsabile");
                     $messaggio_successo = "Azienda registrata!";
                 } 
                 catch (\PDOException $e) {
@@ -85,7 +88,7 @@ class ResponsabileController {
         include BASE_PATH . '/Views/Responsabile/AziendaView.php';
     }
 
-    public function bilancio(){
+    public function bilancio() {
         $messaggio_errore = null;
         $messaggio_successo = null;
         $aziende = [];
@@ -96,22 +99,25 @@ class ResponsabileController {
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_bilancio'])) {
             try {
+                $ragione_sociale = $_POST['ragione_sociale'];
+                $data_creazione = $_POST['data_creazione'];
                 $this->dbModel->creaBilancio(
-                    $_POST['ragione_sociale'],
-                    $_POST['data_creazione']
+                    $ragione_sociale,
+                    $data_creazione
                 );
 
                 foreach ($_POST['voci'] as $voce => $valore) {
                     if ($valore !== "") {
                         $this->dbModel->popolaVoceBilancio(
                             $voce,
-                            $_POST['ragione_sociale'],
-                            $_POST['data_creazione'],
+                            $ragione_sociale,
+                            $data_creazione,
                             (float)$valore
                         );
                     }
                 }
 
+                $this->logModel->logEvento("Creazione bilancio per azienda '$ragione_sociale' in data $data_creazione da parte di $username");
                 $messaggio_successo = "Bilancio creato!";
             } 
             catch (\PDOException $e) {
@@ -122,7 +128,7 @@ class ResponsabileController {
         include BASE_PATH . '/Views/Responsabile/BilancioView.php';
     }
 
-    public function esgIndicatore(){
+    public function esgIndicatore() {
         $messaggio_errore = null;
         $messaggio_successo = null;
         $indicatori = [];
@@ -133,18 +139,22 @@ class ResponsabileController {
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_esg'])) {
             $chiavi = explode('|', $_POST['voce_bilancio_keys']);
-
+            $nome_indicatore = $_POST['nome_indicatore'];
+            $valore = (float)$_POST['valore'];
+            $fonte = $_POST['fonte'];
+            $data_rilevazione = $_POST['data_rilevazione'];
             try {
                 $this->dbModel->inserisciValoreESG(
-                    $_POST['nome_indicatore'],
+                    $nome_indicatore,
                     $chiavi[0],
                     $chiavi[1],
                     $chiavi[2],
-                    (float)$_POST['valore'],
-                    $_POST['fonte'],
-                    $_POST['data_rilevazione']
+                    $valore,
+                    $fonte,
+                    $data_rilevazione
                 );
 
+                $this->logModel->logEvento("Inserimento valore ESG '$nome_indicatore' per azienda '$chiavi[1]' da parte di $username");
                 $messaggio_successo = "Valore ESG salvato!";
             } 
             catch (\PDOException $e) {

@@ -63,6 +63,7 @@ class AmministratoreController {
                     move_uploaded_file($_FILES["immagine"]["tmp_name"], BASE_PATH . $immagine);
                 }
 
+                $this->logModel->logEvento("Inserimento indicatore ESG '$indicatore' da parte di $usernameAmministratore")
                 $messaggio_successo = "Indicatore ESG inserito con successo!";
             } catch (\PDOException $e) {
                 $messaggio_errore = GestoreErroreDb::handle($e, "indicatore_esg");
@@ -84,6 +85,7 @@ class AmministratoreController {
 
             try {
                 $this->dbModel->inserisciVoceContabile($voceContabile, $usernameAmministratore, $descrizione);
+                $this->logModel->logEvento("Inserimento voce contabile '$voceContabile' da parte di $usernameAmministratore");
                 $messaggio_successo = "Voce contabile inserito con successo!";
             }
             catch (\PDOException $e) {
@@ -106,6 +108,7 @@ class AmministratoreController {
 
             try {
                 $this->dbModel->associaRevisore($usernameRevisore, $ragioneSociale, $dataCreazione);
+                $this->logModel->logEvento("Associazione revisore $usernameRevisore a bilancio '$ragioneSociale'");
                 $messaggio_successo = "associazione revisore con successo!";
             }
             catch (\PDOException $e) {

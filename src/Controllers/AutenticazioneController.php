@@ -92,14 +92,14 @@ class AutenticazioneController {
                     $emailAggiuntive
                 );
 
+                $this->logModel->logEvento("Registrazione nuovo utente '$username' come $tipoUtente");
                 header("Location: /autenticazione/login");
                 exit;
             } catch (\PDOException $e) {
                 if ($curriculumVitaePath !== "" && file_exists($_SERVER['DOCUMENT_ROOT'] . $curriculumVitaePath)) {
-                unlink($_SERVER['DOCUMENT_ROOT'] . $curriculumVitaePath);
-            }
-
-            $messaggio_errore = GestoreErroreDb::handle($e, "utente");
+                    unlink($_SERVER['DOCUMENT_ROOT'] . $curriculumVitaePath);
+                }
+                $messaggio_errore = GestoreErroreDb::handle($e, "utente");
             }
         }
 
