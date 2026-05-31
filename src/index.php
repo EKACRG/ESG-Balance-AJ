@@ -1,6 +1,11 @@
 <?php
 define('BASE_PATH', '/var/www/html');
 
+// Converte tutti gli errori PHP in eccezioni
+set_error_handler(function($severity, $message, $file, $line) {
+    throw new \ErrorException($message, 0, $severity, $file, $line);
+});
+
 spl_autoload_register(function ($class) {
     $file = BASE_PATH . '/' . str_replace('\\', '/', $class) . '.php';
     if (file_exists($file)) {
@@ -8,27 +13,62 @@ spl_autoload_register(function ($class) {
     }
 });
 
-$dbModel = new Models\DatabaseModel();
-session_start();
+// Gestione centralizzata degli errori
+try {
+    $dbModel = new Models\DatabaseModel();
+    $logModel = new Models\LogModel();
+    session_start();
 
-$uri = trim($_SERVER['REQUEST_URI'], '/');
-$parts = explode('/', $uri);
+    $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    $uri = trim($uri, '/');
+    $parts = explode('/', $uri);
 
-$controllerName = isset($parts[0]) && $parts[0] !== '' ? ucfirst($parts[0]) . 'Controller' : null;
-$methodName = isset($parts[1]) && $parts[1] !== '' ? $parts[1] : 'index';
-$controllerClass = 'Controllers\\' . $controllerName;
+    $controllerName = isset($parts[0]) && $parts[0] !== '' ? ucfirst($parts[0]) . 'Controller' : null;
+    $methodName = isset($parts[1]) && $parts[1] !== '' ? $parts[1] : 'index';
+    $controllerClass = 'Controllers\\' . $controllerName;
 
-if ($controllerName && class_exists($controllerClass)) {
-    $controller = new $controllerClass($dbModel);
-    if (method_exists($controller, $methodName)) {
-        $controller->$methodName();
+    if ($controllerName === null) {
+        if ($dbModel->isLoggedIn()) {
+            $tipo = $_SESSION["tipo_utente"] ?? 'autenticazione';
+            header("Location: /" . $tipo . "/index");
+        } else {
+            header("Location: /autenticazione/login");
+        }
+        exit;
+    }
+
+    if ($controllerName && class_exists($controllerClass)) {
+        $controller = new $controllerClass($dbModel, $logModel);
+        if ($controllerClass === 'Controllers\StatsController' && !$dbModel->isLoggedIn()) {
+            http_response_code(404);
+            $messaggio_errore = "404 - Pagina non trovata";
+            include BASE_PATH . "/Views/ErrorView.php";
+            exit;
+        }
+        if (method_exists($controller, $methodName)) {
+            $controller->$methodName();
+        }
+        else {
+            http_response_code(404);
+            $messaggio_errore = "404 - Metodo non trovato";
+            include BASE_PATH . "/Views/ErrorView.php";
+        }
     }
     else {
         http_response_code(404);
-        echo '404 - Metodo non trovato';
+        $messaggio_errore = "404 - Pagina non trovata";
+        include BASE_PATH . "/Views/ErrorView.php";
     }
 }
-else {
-    http_response_code(404);
-    echo '404 - Pagina non trovata';
+catch (\PDOException $e) {
+    http_response_code(500);
+    error_log($e->getMessage());
+    $messaggio_errore = "Errore di connessione. Riprova più tardi.";
+    include BASE_PATH . "/Views/ErrorView.php";
+}
+catch (\Exception $e) {
+    http_response_code(500);
+    error_log($e->getMessage());
+    $messaggio_errore = "Si è verificato un errore. Riprova più tardi.";
+    include BASE_PATH . "/Views/ErrorView.php";
 }

@@ -26,19 +26,19 @@ BEGIN
     -- Controllo username già in uso
     IF EXISTS (SELECT 1 FROM UTENTI WHERE UsernameUtente = UTENTI.Username) THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Errore: Username già in uso';
+        SET MESSAGE_TEXT = 'Errore: Username esistente';
     END IF;
 
     -- Controllo CF esattametne 16 caratteri
     IF CHAR_LENGTH(CodiceFiscale) != 16 THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Errore: Codice Fiscale deve essere esattamente di 16 caratteri';
+        SET MESSAGE_TEXT = 'Errore: Codice fiscale deve essere esattamente di 16 caratteri';
     END IF;
 
     -- Controllo CF già in uso
     IF EXISTS (SELECT 1 FROM UTENTI WHERE CodiceFiscale = UTENTI.CF) THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Errore: Codice Fiscale già in uso';
+        SET MESSAGE_TEXT = 'Errore: Codice fiscale esistente';
     END IF;
 
     INSERT INTO UTENTI (Username, Password, CF, DataNascita, LuogoNascita) VALUES (UsernameUtente, Password, CodiceFiscale, DataNascita, LuogoNascita);
@@ -69,12 +69,26 @@ DROP PROCEDURE IF EXISTS RegistraResponsabile;
 DELIMITER |
 CREATE PROCEDURE RegistraResponsabile(IN UsernameUtente VARCHAR(30), IN CurriculumVitae VARCHAR(255))
 BEGIN
-    IF CurriculumVitae NOT LIKE '%.pdf' THEN
+    IF LOWER(CurriculumVitae) NOT LIKE '%.pdf' THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Errore: CurriculumVitae deve essere in formato PDF (.pdf)';
+        SET MESSAGE_TEXT = 'Errore: Curriculum Vitae deve essere in formato PDF (.pdf)';
     END IF;
 
     INSERT INTO RESPONSABILE_AZIENDALE (Username, CurriculumVitae) VALUES (UsernameUtente, CurriculumVitae);
+END |
+DELIMITER ;
+
+-- Inserisci email aggiuntive
+DROP PROCEDURE IF EXISTS InserisciEmail;
+DELIMITER |
+CREATE PROCEDURE InserisciEmail(IN UsernameUtente VARCHAR(30), IN IndirizzoEmail VARCHAR(30))
+BEGIN
+    IF EXISTS (SELECT 1 FROM EMAIL WHERE IndirizzoEmail = EMAIL.IndirizzoEmail) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Errore: Email esistente';
+    END IF;
+
+    INSERT INTO EMAIL (Username, IndirizzoEmail) VALUES (UsernameUtente, IndirizzoEmail);
 END |
 DELIMITER ;
 
@@ -95,7 +109,7 @@ BEGIN
     -- Controllo nome indicatore già in uso
     IF EXISTS (SELECT 1 FROM INDICATORE_ESG WHERE Indicatore = INDICATORE_ESG.NomeIndicatore) THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Errore: esiste già un indicatore ESG con questo nome';
+        SET MESSAGE_TEXT = 'Errore: Indicatore ESG esistente';
     END IF;
 
     -- Controllo coerenza campi per tipo Ambiente
@@ -122,7 +136,7 @@ BEGIN
     -- Controllo nome voce contabile già in uso
     IF EXISTS (SELECT 1 FROM VOCE_CONTABILE WHERE VoceContabile = VOCE_CONTABILE.NomeVoceContabile) THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Errore: Nome voce contabile già in uso'; 
+        SET MESSAGE_TEXT = 'Errore: Nome voce contabile esistente'; 
     END IF;
 
     INSERT INTO VOCE_CONTABILE (NomeVoceContabile, Username_Amministratore, Descrizione) VALUES (VoceContabile, UsernameAmministratore, Descrizione);
@@ -134,6 +148,15 @@ DROP PROCEDURE IF EXISTS AssociaRevisore;
 DELIMITER |
 CREATE PROCEDURE AssociaRevisore( IN P_Username_Revisore VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE)
 BEGIN
+    IF EXISTS (
+        SELECT 1 
+        FROM VALUTA_GIUDIZIO
+        WHERE Username_Revisore = P_Username_Revisore AND RagioneSociale = P_RagioneSociale AND DataCreazione = P_DataCreazione
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Errore: associazione revisore-bilancio esistente';
+    END IF;
+
     INSERT INTO VALUTA_GIUDIZIO (Username_Revisore, RagioneSociale, DataCreazione)
     VALUES (P_Username_Revisore, P_RagioneSociale, P_DataCreazione);
 END |
@@ -141,43 +164,55 @@ DELIMITER ;
 
 
 -- Inserimento da parte dei revisori le proprie competenze
-DROP PROCEDURE IF EXISTS InserimentoCompetenze;
+DROP PROCEDURE IF EXISTS InserisciCompetenze;
 DELIMITER |
-CREATE PROCEDURE InserimentoCompetenze ( IN P_Username_Revisore VARCHAR(30), IN P_NomeCompetenza VARCHAR(100),IN P_Livello INT)
+CREATE PROCEDURE InserisciCompetenze ( IN P_Username_Revisore VARCHAR(30), IN P_NomeCompetenza VARCHAR(100),IN P_Livello INT)
 BEGIN
-		IF p_Livello >= 0 AND p_Livello <= 5 THEN
-        INSERT INTO POSSIEDE (Username_Revisore, NomeCompetenza, Livello)
-        VALUES (P_Username_Revisore,P_NomeCompetenza,P_Livello);
-        ELSE
-			SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Errore: il livello di competenza deve essere compreso tra 0 e 5';
-		END IF;
+    -- Validazione livello
+    IF P_Livello < 0 OR P_Livello > 5 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Errore: Livello competenza non valido (deve essere tra 0 e 5)';
+    END IF;
+
+    -- Salva la competenza nella tabella principale (ignora se esiste già)
+    INSERT IGNORE INTO COMPETENZA (NomeCompetenza) VALUES (P_NomeCompetenza);
+    
+    INSERT INTO POSSIEDE (Username_Revisore, NomeCompetenza, Livello)
+    VALUES (P_Username_Revisore,P_NomeCompetenza,P_Livello);
 END |
 DELIMITER ;
+
+
 -- Inserimento di note sulle singole voci di bilancio
-DROP PROCEDURE IF EXISTS InserimentoAnnotazione;
+DROP PROCEDURE IF EXISTS InserisciAnnotazione;
 DELIMITER |
-CREATE PROCEDURE InserimentoAnnotazione (IN  P_Username_Revisore VARCHAR(30), IN P_NomeVoceBilancio VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE, IN P_Data DATE, IN P_Testo TEXT)
+CREATE PROCEDURE InserisciAnnotazione (IN  P_Username_Revisore VARCHAR(30), IN P_NomeVoceBilancio VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE, IN P_Data DATE, IN P_Testo TEXT)
 BEGIN
-        INSERT INTO ANNOTAZIONE (Username_Revisore, NomeVoceBilancio, RagioneSociale, DataCreazione, Data, Testo)
-        VALUES (P_Username_Revisore,P_NomeVoceBilancio,P_RagioneSociale, P_DataCreazione, P_Data,P_Testo);
+    -- Validazione: nota già inserita
+    IF EXISTS (SELECT 1 FROM ANNOTAZIONE WHERE Username_Revisore = P_Username_Revisore AND NomeVoceBilancio = P_NomeVoceBilancio AND RagioneSociale = P_RagioneSociale AND DataCreazione = P_DataCreazione AND Data = P_Data) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Errore: Nota presente per questa voce di bilancio in questa data';
+    END IF;
+
+    INSERT INTO ANNOTAZIONE (Username_Revisore, NomeVoceBilancio, RagioneSociale, DataCreazione, Data, Testo)
+    VALUES (P_Username_Revisore,P_NomeVoceBilancio,P_RagioneSociale, P_DataCreazione, P_Data,P_Testo);
 END |
 DELIMITER ;
 
 -- Inserimento del giudizio complessivo
-DROP PROCEDURE IF EXISTS InserimentoGiudizio;
+DROP PROCEDURE IF EXISTS InserisciGiudizio;
 DELIMITER |
-CREATE PROCEDURE InserimentoGiudizio (IN  P_Username_Revisore VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE, IN P_Esito VARCHAR(30), IN P_CampoRilievi TEXT, IN P_Data DATE)
+CREATE PROCEDURE InserisciGiudizio (IN  P_Username_Revisore VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE, IN P_Esito VARCHAR(30), IN P_CampoRilievi TEXT, IN P_Data DATE)
 BEGIN
-		IF P_Esito IN ('approvazione', 'approvazione con rilievi', 'respingimento') THEN
-			UPDATE VALUTA_GIUDIZIO 
-            SET Esito = P_Esito,
-				CampoRilievi = P_CampoRilievi,
-                Data = P_Data
-			WHERE Username_Revisore = P_Username_Revisore AND
-				  RagioneSociale = P_RagioneSociale AND
-                  DataCreazione = P_DataCreazione;
-		ELSE
+    IF P_Esito IN ('approvazione', 'approvazione con rilievi', 'respingimento') THEN
+        UPDATE VALUTA_GIUDIZIO 
+        SET Esito = P_Esito,
+            CampoRilievi = P_CampoRilievi,
+            Data = P_Data
+        WHERE Username_Revisore = P_Username_Revisore AND
+            RagioneSociale = P_RagioneSociale AND
+            DataCreazione = P_DataCreazione;
+    ELSE
         SIGNAL SQLSTATE '45000' 
         SET MESSAGE_TEXT = 'Errore: Esito non valido. Deve essere: approvazione, approvazione con rilievi, o respingimento';
     END IF;
@@ -204,6 +239,12 @@ DROP PROCEDURE IF EXISTS CreaBilancio;
 DELIMITER |
 CREATE PROCEDURE CreaBilancio( IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE)
 BEGIN
+	-- Validazione bilancio non esiste già
+	IF EXISTS (SELECT 1 FROM BILANCIO WHERE RagioneSociale = P_RagioneSociale AND DataCreazione = P_DataCreazione) THEN
+		SIGNAL SQLSTATE '45000'
+		SET MESSAGE_TEXT = 'Errore: Bilancio esistente';
+	END IF;
+
 	INSERT INTO BILANCIO (RagioneSociale, DataCreazione, Stato)
     VALUES (P_RagioneSociale, P_DataCreazione, 'bozza');
 END |
@@ -213,6 +254,12 @@ DROP PROCEDURE IF EXISTS PopolaVoceBilancio;
 DELIMITER |
 CREATE PROCEDURE PopolaVoceBilancio( IN P_NomeVoce VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE,IN P_ValoreNumerico DECIMAL(12,2))
 BEGIN
+	-- Validazione voce non già inserita per questo bilancio
+	IF EXISTS (SELECT 1 FROM VOCE_BILANCIO WHERE NomeVoceBilancio = P_NomeVoce AND RagioneSociale = P_RagioneSociale AND DataCreazione = P_DataCreazione) THEN
+		SIGNAL SQLSTATE '45000'
+		SET MESSAGE_TEXT = 'Errore: Voce esistente per questo bilancio';
+	END IF;
+
 	INSERT INTO VOCE_BILANCIO (NomeVoceBilancio, RagioneSociale, DataCreazione, ValoreNumerico) 
     VALUES ( P_NomeVoce, P_RagioneSociale ,  P_DataCreazione , P_ValoreNumerico);
 END |
@@ -223,6 +270,12 @@ DROP PROCEDURE IF EXISTS InserisciValoreESG;
 DELIMITER |
 CREATE PROCEDURE InserisciValoreESG( IN P_NomeIndicatore VARCHAR(100), IN P_NomeVoceBilancio VARCHAR(30), IN P_RagioneSociale VARCHAR(100), IN P_DataCreazione DATE,IN P_Valore DECIMAL(15,2),IN P_Fonte VARCHAR(255),IN P_Data DATE)
 BEGIN
+	-- Validazione valore non negativo (opzionale, ma logico per un indicatore)
+	IF P_Valore < 0 THEN
+		SIGNAL SQLSTATE '45000'
+		SET MESSAGE_TEXT = 'Errore: Il valore dell''indicatore non può essere negativo';
+	END IF;
+
 	INSERT INTO MEMORIZZA (NomeIndicatore, NomeVoceBilancio, RagioneSociale, DataCreazione, Valore, Fonte, Data)
     VALUES (P_NomeIndicatore, P_NomeVoceBilancio, P_RagioneSociale, P_DataCreazione, P_Valore, P_Fonte, P_Data);    
 END |

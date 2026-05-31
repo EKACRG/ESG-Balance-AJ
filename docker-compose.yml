@@ -7,8 +7,11 @@ services:
       - .env
     volumes:
       - ./src:/var/www/html
+      - uploads:/var/www/html/uploads
     depends_on:
       - mysql
+      - mongodb
+    command: bash -c "composer install --no-interaction && apache2-foreground"
 
   mysql:
     image: mysql:8.0
@@ -20,5 +23,16 @@ services:
     ports:
       - "3306:3306"
 
+  mongodb:
+    image: mongo:6.0
+    env_file:
+      - .env
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodbdata:/var/lib/mongodb
+
 volumes:
   mysqldata: {}
+  mongodbdata: {}
+  uploads: {}
