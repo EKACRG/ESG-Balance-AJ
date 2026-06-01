@@ -20,6 +20,8 @@ class RevisoreController {
     // Dashboard revisore
     public function index() {
         $username = $_SESSION['username'];
+
+        // Controllo se il revisore ha bilanci da valutare per sbloccare le funzionalità
         $sbloccaValutazioni = $this->dbModel->haBilanciDaValutare($username);
         include BASE_PATH . '/Views/Revisore/RevisoreView.php';
     }
@@ -30,19 +32,23 @@ class RevisoreController {
         $messaggio_successo = null;
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_competenza'])) {
+            // Recupero dati dal form
             $username = $_SESSION["username"];
             $competenza = $_POST['nome_competenza'];
             $livello = $_POST['livello'];
 
+            // Validazione livello competenza
             if ($livello < 0 || $livello > 5) {
                 $messaggio_errore = "Livello non valido (0-5)";
             } else {
                 try {
+                    // Inserimento nel db
                     $this->dbModel->inserisciCompetenza($username, $competenza, $livello);
+                    // Log dell'evento
                     $this->logModel->logEvento("Inserimento competenza '$competenza' da parte di $username");
                     $messaggio_successo = "Competenza salvata con successo!";
                 } 
-                catch (\PDOException $e) {
+                catch (\PDOException $e) { // Gestione errori
                     $messaggio_errore = GestoreErroreDb::handle($e, "possiede");
                 }
             }
@@ -60,6 +66,7 @@ class RevisoreController {
         $voci_contabili = [];
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_nota'])) {
+            // Recupero dati dal form
             $nomeVoce = $_POST['nome_voce'];
             $bilancioSelezionato = $_POST['bilancio_selezionato'] ?? '';
             $parts = explode('|', $bilancioSelezionato);
@@ -69,6 +76,7 @@ class RevisoreController {
             $testo = $_POST['testo'];
 
             try {
+                // Inserimento nel db
                 $this->dbModel->inserisciNota(
                     $username, 
                     $nomeVoce, 
@@ -78,20 +86,21 @@ class RevisoreController {
                     $testo
                 );
 
+                // Log dell'evento
                 $this->logModel->logEvento("Inserimento nota su voce '$nomeVoce' del bilancio '$ragioneSociale' da parte di $username");
                 $messaggio_successo = "Nota aggiunta con successo!";
             } 
-            catch (\PDOException $e) {
+            catch (\PDOException $e) { // Gestione errori
                 $messaggio_errore = GestoreErroreDb::handle($e, "annotazione");
             }
         }
 
         try {
+            // Recupero bilanci assegnati e voci contabili per popolare il form
             $bilanci_assegnati = $this->dbModel->getBilanciRevisore($username);
             $voci_contabili = $this->dbModel->getVociContabili();
         } 
         catch (\PDOException $e) {
-            error_log($e->getMessage());
             $messaggio_errore = "Errore durante il caricamento dei dati. Riprova.";
         }
 
@@ -106,6 +115,7 @@ class RevisoreController {
         $bilanci_assegnati = [];
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_giudizio'])) {
+            // Recupero dati dal form
             $esito = $_POST['esito'];
             $dataGiudizio = $_POST['data_giudizio'];
             $campoRilievi = trim($_POST['campo_rilievi']);
@@ -114,10 +124,12 @@ class RevisoreController {
             $dataCreazione = $parts[1] ?? '';
             $esiti_validi = ['approvazione', 'approvazione con rilievi', 'respingimento'];
 
+            // Validazione esito
             if (!in_array($esito, $esiti_validi)) {
                 $messaggio_errore = "Esito non valido.";
             } else {
                 try {
+                    // Salvataggio nel db
                     $this->dbModel->salvaGiudizio(
                         $usernameRevisore, 
                         $ragioneSociale,
@@ -127,6 +139,7 @@ class RevisoreController {
                         $campoRilievi
                     );
 
+                    // Log dell'evento
                     $this->logModel->logEvento("Salvataggio giudizio '$esito' sul bilancio '$ragioneSociale' da parte di $usernameRevisore");
                     $messaggio_successo = "Giudizio salvato con successo!";
                 } catch (\PDOException $e) {
@@ -135,6 +148,7 @@ class RevisoreController {
             }
         }
 
+        // Recupero bilanci assegnati per popolare il form
         $bilanci_assegnati = $this->dbModel->getBilanciRevisore($usernameRevisore);
 
         include BASE_PATH . '/Views/Revisore/GiudizioView.php';

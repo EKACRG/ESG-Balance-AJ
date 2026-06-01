@@ -28,6 +28,7 @@ class AmministratoreController {
         $messaggio_successo = null;
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
+            // Recupero dati dal form
             $indicatore = $_POST["indicatore"] ?? "";
             $usernameAmministratore = $_SESSION["username"];
             $rilevanza = $_POST["rilevanza"] ?? 0;
@@ -36,6 +37,7 @@ class AmministratoreController {
             $ambitoSociale = $_POST["ambitoSociale"] ?? null;
             $frequenzaRilevazione = $_POST["frequenzaRilevazione"] ?? null;
 
+            // Validazione immagine
             $immagine = "";
             $tipi_consentiti = ['image/jpeg', 'image/png', 'image/gif'];
             if (!isset($_FILES["immagine"]) || $_FILES["immagine"]["error"] !== UPLOAD_ERR_OK) {
@@ -47,6 +49,7 @@ class AmministratoreController {
                     $immagine = "/uploads/" . time() . "_" . basename($_FILES["immagine"]["name"]);
             }
 
+            // Inserimento nel db solo se non ci sono errori di validazione
             if ($messaggio_errore === null) try {
                 $this->dbModel->inserisciIndicatoriESG(
                     $indicatore,
@@ -59,13 +62,15 @@ class AmministratoreController {
                     $frequenzaRilevazione
                 );
 
+                // Spostamento del file nella cartella uploads
                 if ($immagine !== "") {
                     move_uploaded_file($_FILES["immagine"]["tmp_name"], BASE_PATH . $immagine);
                 }
 
+                // Log dell'evento
                 $this->logModel->logEvento("Inserimento indicatore ESG '$indicatore' da parte di $usernameAmministratore");
                 $messaggio_successo = "Indicatore ESG inserito con successo!";
-            } catch (\PDOException $e) {
+            } catch (\PDOException $e) { // Gestione errori
                 $messaggio_errore = GestoreErroreDb::handle($e, "indicatore_esg");
             }
         }
@@ -79,16 +84,19 @@ class AmministratoreController {
         $messaggio_successo = null;
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
+            // Recupero dati dal form
             $voceContabile = $_POST["voceContabile"] ?? "";
             $usernameAmministratore = $_SESSION["username"];
             $descrizione = $_POST["descrizione"] ?? "";
 
             try {
+                // Inserimento nel db
                 $this->dbModel->inserisciVoceContabile($voceContabile, $usernameAmministratore, $descrizione);
+                // Log dell'evento
                 $this->logModel->logEvento("Inserimento voce contabile '$voceContabile' da parte di $usernameAmministratore");
                 $messaggio_successo = "Voce contabile inserito con successo!";
             }
-            catch (\PDOException $e) {
+            catch (\PDOException $e) { // Gestione errori
                 $messaggio_errore = GestoreErroreDb::handle($e, "voce_contabile");
             }
         }
@@ -102,16 +110,19 @@ class AmministratoreController {
         $messaggio_successo = null;
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
+            // Recupero dati dal form
             $usernameRevisore = $_POST["usernameRevisore"] ?? "";
             $bilancio = $_POST["bilancio"] ?? "";
             [$ragioneSociale, $dataCreazione] = explode("|", $bilancio); 
 
             try {
+                // Inserimento nel db
                 $this->dbModel->associaRevisore($usernameRevisore, $ragioneSociale, $dataCreazione);
+                // Log dell'evento
                 $this->logModel->logEvento("Associazione revisore $usernameRevisore a bilancio '$ragioneSociale'");
                 $messaggio_successo = "associazione revisore con successo!";
             }
-            catch (\PDOException $e) {
+            catch (\PDOException $e) { // Gestione errori
                 $messaggio_errore = GestoreErroreDb::handle($e, "giudizio");
             }
         }

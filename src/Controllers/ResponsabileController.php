@@ -19,6 +19,8 @@ class ResponsabileController {
 
     public function index() {
         $username = $_SESSION['username'];
+
+        // Controllo se il responsabile ha già aziende e bilanci per sbloccare le funzionalità
         $haAziende = $this->dbModel->haAlmenoUnAzienda($username);
         $haBilanci = $this->dbModel->haAlmenoUnBilancio($username);
 
@@ -30,11 +32,13 @@ class ResponsabileController {
         $messaggio_successo = null;
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_azienda'])) {
+            // Recupero dati dal form
             $usernameResponsabile = $_SESSION['username'];
             $ragioneSociale = $_POST['ragione_sociale'];
             $nome = $_POST['nome_azienda'];
             $partitaIva = $_POST['partita_iva'];
 
+            // Validazione partita iva
             if (strlen($partitaIva) < 11) {
                 $messaggio_errore = "La partita IVA è troppo corta. Deve contenere 11 cifre.";
             } 
@@ -48,6 +52,7 @@ class ResponsabileController {
             $settore = $_POST['settore'];
             $numDipendenti = $_POST['num_dipendenti'];
 
+            // Validazione logo
             $logoPath = "";
             $tipi_consentiti = ['image/jpeg', 'image/png', 'image/gif'];
             if (!isset($_FILES["logo"]) || $_FILES["logo"]["error"] !== UPLOAD_ERR_OK) {
@@ -57,9 +62,11 @@ class ResponsabileController {
                 $messaggio_errore = "Tipo file non consentito.";
             }
             else {
+                // Costruzione path con timestamp per evitare conflitti di nome
                 $logoPath = "/uploads/" . time() . "_" . basename($_FILES["logo"]["name"]);
             }
             
+            // Inserimento nel db se non ci sono errori
             if ($messaggio_errore === null) {
                 try {
                     $this->dbModel->registraAzienda(
@@ -72,14 +79,16 @@ class ResponsabileController {
                         $logoPath
                     );
 
+                    // Spostamento del file nella cartella uploads
                     if ($logoPath !== "") {
                         move_uploaded_file($_FILES["logo"]["tmp_name"], BASE_PATH . $logoPath);
                     }
 
+                    // Log dell'evento
                     $this->logModel->logEvento("Registrazione azienda '$ragioneSociale' da parte di $usernameResponsabile");
                     $messaggio_successo = "Azienda registrata!";
                 } 
-                catch (\PDOException $e) {
+                catch (\PDOException $e) { // Gestione errori
                     $messaggio_errore = GestoreErroreDb::handle($e, "azienda");
                 }
             }
@@ -98,9 +107,11 @@ class ResponsabileController {
         $voci_template = $this->dbModel->getVociTemplate();
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_bilancio'])) {
+            // Recupero dati dal form    
+            $ragione_sociale = $_POST['ragione_sociale'];
+            $data_creazione = $_POST['data_creazione'];
+
             try {
-                $ragione_sociale = $_POST['ragione_sociale'];
-                $data_creazione = $_POST['data_creazione'];
                 $this->dbModel->creaBilancio(
                     $ragione_sociale,
                     $data_creazione
@@ -117,10 +128,11 @@ class ResponsabileController {
                     }
                 }
 
+                // Log dell'evento
                 $this->logModel->logEvento("Creazione bilancio per azienda '$ragione_sociale' in data $data_creazione da parte di $username");
                 $messaggio_successo = "Bilancio creato!";
             } 
-            catch (\PDOException $e) {
+            catch (\PDOException $e) { // Gestione errori
                 $messaggio_errore = GestoreErroreDb::handle($e, "bilancio");
             }
         }
@@ -138,12 +150,15 @@ class ResponsabileController {
         $voci_bilancio = $this->dbModel->getVociBilancioResponsabile($username);
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['salva_esg'])) {
+            // Recupero dati dal form
             $chiavi = explode('|', $_POST['voce_bilancio_keys']);
             $nome_indicatore = $_POST['nome_indicatore'];
             $valore = (float)$_POST['valore'];
             $fonte = $_POST['fonte'];
             $data_rilevazione = $_POST['data_rilevazione'];
+
             try {
+                // Inserimento nel db
                 $this->dbModel->inserisciValoreESG(
                     $nome_indicatore,
                     $chiavi[0],
@@ -154,10 +169,11 @@ class ResponsabileController {
                     $data_rilevazione
                 );
 
+                // Log dell'evento
                 $this->logModel->logEvento("Inserimento valore ESG '$nome_indicatore' per azienda '$chiavi[1]' da parte di $username");
                 $messaggio_successo = "Valore ESG salvato!";
             } 
-            catch (\PDOException $e) {
+            catch (\PDOException $e) { // Gestione errori
                 $messaggio_errore = GestoreErroreDb::handle($e, "esg");
             }
         }

@@ -8,6 +8,7 @@ class StatsController {
         $this->dbModel = $dbModel;
     }
 
+    // Visualizzazione statistiche
     public function index() {
         $data = [
             "num_aziende" => $this->dbModel->getNumAziende(),
